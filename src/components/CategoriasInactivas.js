@@ -15,10 +15,10 @@ const CategoriasInactivas = () => {
     const [title, setTittle] = useState('');
 
     useEffect(() => {
-        getCategoriasInactivas();
+        getCategorias();
     }, []);
 
-    const getCategoriasInactivas = async () => {
+    const getCategorias = async () => {
         try {
             const categorias = await AxiosProducto('/categoriasD', null, 'get');
             setCategorias(categorias);
@@ -32,7 +32,7 @@ const CategoriasInactivas = () => {
     const openModal = (op, cat_id, cat_nombre, cat_estado) => {
         setcatId('');
         setcatNombre('');
-        setcatEstado(true);
+        setcatEstado(false);
         setoperation(op);
         setModalOpen(true);
         if (op === 1) {
@@ -41,7 +41,7 @@ const CategoriasInactivas = () => {
             setTittle('Actualizar Categoría');
             setcatId(cat_id);
             setcatNombre(cat_nombre);
-            setcatEstado(cat_estado);
+            setcatEstado(false);
         }
         window.setTimeout(function () {
             document.getElementById('cat_nombre').focus();
@@ -50,7 +50,58 @@ const CategoriasInactivas = () => {
 
     const closeModal = () => {
         setModalOpen(false);
-        getCategoriasInactivas();
+        getCategorias();
+    };
+
+    const validar = () => {
+        var parametros;
+        var metodo;
+        var urlOperacion;
+        if (cat_nombre.trim() === '') {
+            show_alerta('Escribe el nombre de la categoría', 'warning');
+        } else {
+            parametros = {
+                cat_nombre: cat_nombre,
+                cat_estado: cat_estado
+            };
+            if (operation === 1) {
+                metodo = 'post';
+                urlOperacion = '/categorias/nuevo';
+            } else {
+                actualizarCategoria();
+            }
+            enviarSolicitud(metodo, urlOperacion, parametros);
+        }
+    };
+
+    const enviarSolicitud = async (metodo, urlOperacion, parametros) => {
+        try {
+            const respuesta = await AxiosProducto(urlOperacion, null, metodo, parametros);
+            if (respuesta != null) {
+                show_alerta('Guardado'); // Mostrar mensaje "Guardado"
+                closeModal(); // Cerrar modal y recargar productos
+            } else {
+                show_alerta('Error en la respuesta del servidor', 'error');
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const eliminarCategoria = async (cat_id) => {
+        try {
+            const parametros = { cat_id };
+            const respuesta = await AxiosProducto('/categorias/delete', null, 'put', parametros);
+            if (respuesta != null) {
+                show_alerta('Eliminado'); // Mostrar mensaje "Eliminado"
+                getCategorias(); // Recargar productos
+            } else {
+                show_alerta('Error en la respuesta del servidor', 'error');
+            }
+        } catch (error) {
+            show_alerta('Error en la solicitud: ' + error.message, 'error');
+            console.log(error);
+        }
     };
 
     const actualizarCategoria = async () => {
@@ -69,22 +120,6 @@ const CategoriasInactivas = () => {
             // Maneja el error según tus necesidades
         }
     };
-
-    const enviarSolicitud = async (metodo, urlOperacion, parametros) => {
-        try {
-            const respuesta = await AxiosProducto(urlOperacion, null, metodo, parametros);
-            if (respuesta != null) {
-                show_alerta('Guardado'); // Mostrar mensaje "Guardado"
-                closeModal(); // Cerrar modal y recargar productos
-            } else {
-                show_alerta('Error en la respuesta del servidor', 'error');
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-
     return (
         <div className="App pt-48">
             <div className="mx-auto px-3">
@@ -97,20 +132,16 @@ const CategoriasInactivas = () => {
                     <table className="border-collapse divide-y divide-x divide-gray-500 text-center ">
                         <thead className="bg-dark-purple  text-white">
                             <tr>
+                                <th className="px-6 py-2 text-center text-sm">OPCIONES</th>
                                 <th className="px-6 py-2 text-center text-sm">ID</th>
                                 <th className="px-6 py-2 text-center text-sm">CATEGORÍA</th>
                                 <th className="px-6 py-2 text-center text-sm">ESTADO</th>
-                                <th className="px-6 py-2 text-center text-sm">OPCIONES</th>
                             </tr>
                         </thead>
-
                         <tbody className="divide-y-2 divide-gray-300">
                             {categoria.map((categorias, index) => (
                                 <tr key={categorias.cat_id} className={`bg-white ${index % 2 === 0 ? 'bg-gray-50' : ''} hover:bg-gray-100`}>
-                                    <td>{categorias.cat_id}</td>
-                                    <td>{categorias.cat_nombre}</td>
-                                    <td>{categorias.cat_estado ? 'Inactivo' : 'Activo'}</td>
-                                    <td className="flex justify-around space-x-4 items-center">
+                                     <td className="flex justify-around space-x-4 items-center">
                                         <button
                                             onClick={() =>
                                                 openModal(
@@ -125,8 +156,10 @@ const CategoriasInactivas = () => {
                                         >
                                             <i className="fa-solid fa-edit text-white"></i>
                                         </button>
-
                                     </td>
+                                    <td>{categorias.cat_id}</td>
+                                    <td>{categorias.cat_nombre}</td>
+                                    <td>{categorias.cat_estado ? 'Activo' : 'Inactivo'}</td>
                                 </tr>
                             ))}
                         </tbody>
