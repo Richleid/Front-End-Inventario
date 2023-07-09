@@ -8,6 +8,7 @@ export function show_alerta (mensaje, icono, foco=''){
         title:mensaje,
         icon: icono
     });
+    
 }
 
 function onfocus(foco){

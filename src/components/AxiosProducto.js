@@ -1,11 +1,11 @@
 import Axios from 'axios';
 
 const AxiosProducto = async (url, condiciones = null, tipoPeticion, parametros = null) => {
-  //const jwToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2ODg1MDc1MjksImV4cCI6MTY4ODU5MzkyOX0.gT4JTtsYJBTvP--qV1qg2quAsw_c0mxN-H5c2aA81uc';
+  //const jwToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2ODg1ODM0NDAsImV4cCI6MTY4ODY2OTg0MH0.NEjwlUZxp6ZDUymxwlCTSH2zEyzUFdZRPJJoMVxUM20';
   const baseUrl = 'http://localhost:3000';
   let peticion;
 
- /*Axios.defaults.headers.common['Authorization'] = `${jwToken}`;*/
+ //Axios.defaults.headers.common['Authorization'] = `${jwToken}`;
   Axios.defaults.headers.common['Content-Type'] = 'application/json';
 
   try {
