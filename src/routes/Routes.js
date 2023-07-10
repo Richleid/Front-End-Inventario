@@ -5,6 +5,8 @@ import ProductosInactivos from '../components/ProductosInactivos'
 import Categoria from '../components/Categoria'
 import CategoriaInactivas from '../components/CategoriasInactivas'
 import CategoriasInactivas from '../components/CategoriasInactivas'
+import AdminAjustes from '../components/AdminAjustes'
+import Login from '../components/Login'
 
 const Rutas = () => {
     return (
@@ -18,6 +20,10 @@ const Rutas = () => {
                 <Route path='/Categoria' element={<Categoria />}>
                 </Route>
                 <Route path='/CategoriasInactivas' element={<CategoriasInactivas />}>
+                </Route>
+                <Route path='/AdminAjustes' element={<AdminAjustes />}>
+                </Route>
+                <Route path='/Login' element={<Login />}>
                 </Route>
                 
             </Routes>
