@@ -14,6 +14,48 @@ const Categoria = () => {
     const [operation, setoperation] = useState(1);
     const [title, setTittle] = useState('');
 
+    //Búsqueda
+    const [searchTerm, setSearchTerm] = useState("");
+    const [searchColumn, setSearchColumn] = useState("");
+
+    const columns = [
+        { value: "", label: "Buscar en todas las columnas" },
+        { value: "cat_id", label: "ID" },
+        { value: "cat_nombre", label: "Nombre de la categoría" },
+    ];
+
+    const filteredCategories = categoria.filter((categorias) => {
+        if (searchColumn === "") {
+            // Buscar en todas las columnas
+            const searchFields = [
+                categorias.cat_id.toString(), // Agrega pro_id a los campos de búsqueda
+                categorias.cat_nombre,
+            ];
+            return searchFields.some((field) =>
+                field.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        } else if (searchColumn === "cat_id") {
+            // Buscar en el campo pro_id
+            const fieldValue = categorias.cat_id.toString();
+            return fieldValue.includes(searchTerm);
+        } else {
+            // Buscar en una columna específica
+            const fieldValue = categorias[searchColumn];
+            return fieldValue.toLowerCase().includes(searchTerm.toLowerCase());
+        }
+    });
+
+    //Paginación
+    const [currentPage, setCurrentPage] = useState(1);
+    const categoriesPerPage = 10;
+
+    const indexOfLastCategory = currentPage * categoriesPerPage;
+    const indexOfFirstCategory = indexOfLastCategory - categoriesPerPage; 
+    const currentCategories= filteredCategories.slice(
+        indexOfFirstCategory,
+        indexOfLastCategory
+    );
+    
     useEffect(() => {
         getCategorias();
     }, []);
@@ -27,6 +69,15 @@ const Categoria = () => {
             console.error('Error fetching products', error);
             // Luego puedes usar show_alerta(error.message) para mostrar el error al usuario si deseas
         }
+    };
+
+    const handleSearch = (e) => {
+        setSearchTerm(e.target.value);
+    };
+
+    const handleColumnChange = (e) => {
+        setSearchColumn(e.target.value);
+        setSearchTerm(""); // Reiniciar el término de búsqueda al cambiar la columna
     };
 
     const openModal = (op, cat_id, cat_nombre, cat_estado) => {
@@ -126,7 +177,24 @@ const Categoria = () => {
                 <div className="flex mt-4">
                     <div className="w-1/2 ">
                         <div className="flex justify-between">
-                            <input type="text" placeholder="Buscar categoría..." className="p-2 border-2 border-gray-200 rounded-md w-1/2" />
+                        <select
+                                value={searchColumn}
+                                onChange={handleColumnChange}
+                                className="p-2 border-2 border-gray-200 rounded-md"
+                            >
+                                {columns.map((column) => (
+                                    <option key={column.value} value={column.value}>
+                                        {column.label}
+                                    </option>
+                                ))}
+                            </select>
+                            <input
+                                type="text"
+                                placeholder="Buscar categoría..."
+                                className="p-2 border-2 border-gray-200 rounded-md w-1/2"
+                                value={searchTerm}
+                                onChange={handleSearch}
+                            />
                             <button onClick={() => openModal(1)} className="bg-dark-purple text-white p-3 rounded">
                                 <i className="fa-solid fa-circle-plus"></i>Añadir
                             </button>
@@ -146,7 +214,7 @@ const Categoria = () => {
                             </thead>
 
                             <tbody className="divide-y-2 divide-gray-300">
-                                {categoria.map((categorias, index) => (
+                                {currentCategories.map((categorias, index) => (
                                     <tr key={categorias.cat_id} className={`bg-white ${index % 2 === 0 ? 'bg-gray-50' : ''} hover:bg-gray-100`}>
                                         <td className="flex justify-around space-x-4 items-center">
                                             <button
@@ -183,9 +251,16 @@ const Categoria = () => {
                             </svg>
                         </button>
                         {/* Example pagination links */}
-                        <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">1</button>
-                        <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">2</button>
-                        <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">3</button>
+                        {Array.from({ length: Math.ceil(categoria.length / categoriesPerPage) }).map((_, index) => (
+                            <button
+                                key={index}
+                                className={`relative inline-flex items-center px-4 py-2 border ${currentPage === index + 1 ? 'bg-dark-purple text-white' : 'border-gray-300 bg-white text-gray-700'
+                                    } text-sm font-medium hover:bg-gray-50`}
+                                onClick={() => setCurrentPage(index + 1)}
+                            >
+                                {index + 1}
+                            </button>
+                        ))}
                         <button className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                             <span className="sr-only">Next</span>
                             {/* Heroicon name: solid/chevron-right */}

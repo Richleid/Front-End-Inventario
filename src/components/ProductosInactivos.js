@@ -9,7 +9,6 @@ import { app } from '../fb';
 const ProductosInactivos = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [producto, setProductos] = useState([]);
-    const [categoria, setCategorias] = useState([]);
     const [pro_id, set_proId] = useState('');
     const [pro_nombre, setproNombre] = useState('');
     const [pro_descripcion, setproDescripcion] = useState('');
@@ -18,17 +17,66 @@ const ProductosInactivos = () => {
     const [pro_costo, setproCosto] = useState('');
     const [pro_pvp, setproPvp] = useState('');
     const [pro_imagen, setproImagen] = useState('');
-    const [pro_estado, setproEstado] = useState(false);
+    const [pro_estado, setproEstado] = useState(true);
     const [pro_stock, setproStock] = useState('');
     const [operation, setoperation] = useState(1);
     const [title, setTittle] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState("");
+    const [categoriaOptions, setCategoriaOptions] = useState([]);
 
     const [imageModalOpen, setImageModalOpen] = useState(false);
     const [selectedImageUrl, setSelectedImageUrl] = useState("");
     const [docus, setDocus] = useState([]);
 
+    //Búsqueda
+    const [searchTerm, setSearchTerm] = useState("");
+    const [searchColumn, setSearchColumn] = useState("");
+
+    const columns = [
+        { value: "", label: "Buscar en todas las columnas" },
+        { value: "pro_id", label: "ID" },
+        { value: "pro_nombre", label: "Nombre del producto" },
+        { value: "pro_descripcion", label: "Descripción" },
+        { value: "cat_nombre", label: "Categoría" },
+    ];
+
+    const filteredProducts = producto.filter((productos) => {
+        if (searchColumn === "") {
+            // Buscar en todas las columnas
+            const searchFields = [
+                productos.pro_nombre,
+                productos.pro_descripcion,
+                productos.cat_nombre,
+                productos.pro_id.toString(), // Agrega pro_id a los campos de búsqueda
+            ];
+            return searchFields.some((field) =>
+                field.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        } else if (searchColumn === "pro_id") {
+            // Buscar en el campo pro_id
+            const fieldValue = productos.pro_id.toString();
+            return fieldValue.includes(searchTerm);
+        } else {
+            // Buscar en una columna específica
+            const fieldValue = productos[searchColumn];
+            return fieldValue.toLowerCase().includes(searchTerm.toLowerCase());
+        }
+    });
+    //Paginación
+    const [currentPage, setCurrentPage] = useState(1);
+    const productsPerPage = 6;
+
+    const indexOfLastProduct = currentPage * productsPerPage;
+    const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+    const currentProducts = filteredProducts.slice(
+        indexOfFirstProduct,
+        indexOfLastProduct
+    );
+
     useEffect(() => {
         getProductos();
+        getCategorias();
+        getCategoryIdFromName();
         subida();
     }, []);
 
@@ -39,11 +87,47 @@ const ProductosInactivos = () => {
             console.log(productos);
         } catch (error) {
             console.error('Error fetching products', error);
-            // Luego puedes usar show_alerta(error.message) para mostrar el error al usuario si deseas
         }
     };
 
-    const openModal = (op, pro_id, pro_nombre, pro_descripcion, cat_id, pro_valor_iva, pro_costo, pro_pvp, pro_imagen, pro_estado) => {
+    const getCategorias = async () => {
+        try {
+            const categorias = await AxiosProducto('/categorias', null, 'get');
+            setCategoriaOptions(categorias.map((categoria) => categoria.cat_nombre));
+        } catch (error) {
+            console.error('Error fetching categories', error);
+        }
+    };
+
+    const getCategoryIdFromName = async (categoryName) => {
+        try {
+            const response = await AxiosProducto(`/categorias/nombre/${categoryName}`, null, 'get');
+            const category = response;
+            console.log(category);
+
+            // Verifica si se encontró la categoría y devuelve el objeto de categoría completo
+            if (category && category.length > 0) {
+                const categoryObject = category[0];
+                return categoryObject;
+            } else {
+                return null; // Maneja el caso en que no se haya encontrado la categoría por nombre
+            }
+        } catch (error) {
+            console.error("Error al obtener la categoría:", error);
+            return null; // Maneja cualquier error que pueda ocurrir al llamar al método de la API
+        }
+    };
+
+    const handleSearch = (e) => {
+        setSearchTerm(e.target.value);
+    };
+
+    const handleColumnChange = (e) => {
+        setSearchColumn(e.target.value);
+        setSearchTerm(""); // Reiniciar el término de búsqueda al cambiar la columna
+    };
+
+    const openModal = (op, pro_id, pro_nombre, pro_descripcion, cat_id, pro_valor_iva, pro_costo, pro_pvp, pro_imagen, pro_estado, pro_stock) => {
         set_proId('');
         setproNombre('');
         setproDescripcion('');
@@ -52,7 +136,8 @@ const ProductosInactivos = () => {
         setproCosto('');
         setproPvp('');
         setproImagen('');
-        setproEstado(false);
+        setproStock('');
+        setproEstado(true);
         setoperation(op);
         setModalOpen(true);
         if (op === 1) {
@@ -67,7 +152,8 @@ const ProductosInactivos = () => {
             setproCosto(pro_costo);
             setproPvp(pro_pvp);
             setproImagen(pro_imagen);
-            setproEstado(false);
+            setproEstado(true);
+            setproStock(pro_stock);
         }
         window.setTimeout(function () {
             document.getElementById('pro_nombre').focus();
@@ -79,7 +165,7 @@ const ProductosInactivos = () => {
         getProductos();
     };
 
-    const validar = () => {
+    const validar = async () => {
         var parametros;
         var metodo;
         var urlOperacion;
@@ -87,7 +173,7 @@ const ProductosInactivos = () => {
             show_alerta('Escribe el nombre del producto', 'warning');
         } else if (pro_descripcion.trim() === '') {
             show_alerta('Escribe la descripción del producto', 'warning');
-        } else if (cat_id === '') {
+        } else if (selectedCategory === '') {
             show_alerta('Elige la categoría del producto', 'warning');
         } else if (pro_valor_iva === '') {
             show_alerta('Escribe el valor de IVA', 'warning');
@@ -98,23 +184,29 @@ const ProductosInactivos = () => {
         } else if (pro_imagen.trim() === '') {
             show_alerta('Añade una imagen al producto', 'warning');
         } else {
-            parametros = {
-                pro_nombre: pro_nombre,
-                pro_descripcion: pro_descripcion,
-                cat_id: cat_id,
-                pro_valor_iva: pro_valor_iva,
-                pro_costo: pro_costo,
-                pro_pvp: pro_pvp,
-                pro_imagen: pro_imagen,
-                pro_estado: pro_estado
-            };
-            if (operation === 1) {
-                metodo = 'post';
-                urlOperacion = '/productos/nuevo';
+            console.log(selectedCategory);
+            const categoryObject = await getCategoryIdFromName(selectedCategory);
+            if (categoryObject !== null) {
+                parametros = {
+                    pro_nombre: pro_nombre,
+                    pro_descripcion: pro_descripcion,
+                    cat_id: categoryObject.cat_id,
+                    pro_valor_iva: pro_valor_iva,
+                    pro_costo: pro_costo,
+                    pro_pvp: pro_pvp,
+                    pro_imagen: pro_imagen,
+                    pro_estado: pro_estado
+                };
+                if (operation === 1) {
+                    metodo = 'post';
+                    urlOperacion = '/productos/nuevo';
+                } else {
+                    actualizarProducto();
+                }
+                enviarSolicitud(metodo, urlOperacion, parametros);
             } else {
-                actualizarProducto();
+                show_alerta('No se pudo obtener el ID de la categoría seleccionada', 'error');
             }
-            enviarSolicitud(metodo, urlOperacion, parametros);
         }
     };
 
@@ -199,10 +291,24 @@ const ProductosInactivos = () => {
                 <div className="flex mt-4">
                     <div className="w-1/2 ">
                         <div className="flex justify-between">
-                            <input type="text" placeholder="Buscar producto..." className="p-2 border-2 border-gray-200 rounded-md w-1/2" />
-                            <button onClick={() => openModal(1)} className="bg-dark-purple text-white p-3 rounded">
-                                <i className="fa-solid fa-circle-plus"></i>Añadir
-                            </button>
+                            <select
+                                value={searchColumn}
+                                onChange={handleColumnChange}
+                                className="p-2 border-2 border-gray-200 rounded-md"
+                            >
+                                {columns.map((column) => (
+                                    <option key={column.value} value={column.value}>
+                                        {column.label}
+                                    </option>
+                                ))}
+                            </select>
+                            <input
+                                type="text"
+                                placeholder="Buscar producto..."
+                                className="p-2 border-2 border-gray-200 rounded-md w-1/2"
+                                value={searchTerm}
+                                onChange={handleSearch}
+                            />
                         </div>
                     </div>
                 </div>
@@ -220,12 +326,10 @@ const ProductosInactivos = () => {
                                 <th className="px-4 py-2 text-center text-sm">PVP</th>
                                 <th className="px-4 py-2 text-center text-sm">IMAGEN</th>
                                 <th className="px-4 py-2 text-center text-sm">ESTADO</th>
-                                <th className="px-4 py-2 text-center text-sm">STOCK</th>
-
                             </tr>
                         </thead>
                         <tbody className="divide-y-2 divide-gray-300">
-                            {producto.map((productos, index) => {
+                            {currentProducts.map((productos, index) => {
                                 const imagen = docus.find(
                                     (doc) =>
                                         doc.nombre === productos.pro_nombre &&
@@ -250,7 +354,8 @@ const ProductosInactivos = () => {
                                                         productos.pro_costo,
                                                         productos.pro_pvp,
                                                         productos.pro_imagen,
-                                                        productos.pro_estado
+                                                        productos.pro_estado,
+                                                        productos.pro_stock
                                                     )
                                                 }
                                                 className="bg-dark-purple p-2 rounded-full"
@@ -282,7 +387,7 @@ const ProductosInactivos = () => {
                                                 'Imagen no encontrada'
                                             )}
                                         </td>
-                                        <td>{productos.pro_estado ? 'Inactivo' : 'Activo'}</td>
+                                        <td>{productos.pro_estado ? 'Activo' : 'Inactivo'}</td>
                                         <td>{productos.pro_stock}</td>
                                     </tr>
                                 );
@@ -319,9 +424,16 @@ const ProductosInactivos = () => {
                             </svg>
                         </button>
                         {/* Example pagination links */}
-                        <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">1</button>
-                        <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">2</button>
-                        <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">3</button>
+                        {Array.from({ length: Math.ceil(producto.length / productsPerPage) }).map((_, index) => (
+                            <button
+                                key={index}
+                                className={`relative inline-flex items-center px-4 py-2 border ${currentPage === index + 1 ? 'bg-dark-purple text-white' : 'border-gray-300 bg-white text-gray-700'
+                                    } text-sm font-medium hover:bg-gray-50`}
+                                onClick={() => setCurrentPage(index + 1)}
+                            >
+                                {index + 1}
+                            </button>
+                        ))}
                         <button className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                             <span className="sr-only">Next</span>
                             {/* Heroicon name: solid/chevron-right */}
@@ -332,11 +444,9 @@ const ProductosInactivos = () => {
                     </nav>
                 </div>
             </div>
-
             {modalOpen && (
                 <form onSubmit={submitHandler}>
                     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-
                         <div className="bg-white rounded-lg w-1/3">
                             <div className="flex justify-between items-center p-6 border-b border-gray-200">
                                 <p className="text-lg font-bold">{title}</p>
@@ -346,25 +456,26 @@ const ProductosInactivos = () => {
                             </div>
                             <div className="p-6">
                                 <input type="hidden" id="id" />
-                                <div className="flex items-center space-x-2 mb-3">
-                                    <span className="text-lg">
+                                <div className="grid grid-cols-2 gap-2 mb-3">
+                                    <div className="flex items-center space-x-2">
                                         <i className="fa-solid fa-navicon"></i>
-                                    </span>
+                                        <label className="text-sm">Nombre</label>
+                                    </div>
                                     <input
                                         type="text"
                                         id="pro_nombre"
                                         className="border border-gray-200 rounded px-3 py-2 w-full"
                                         placeholder="Nombre"
-                                        name='nombre'
+                                        name="nombre"
                                         value={pro_nombre}
                                         onChange={(e) => setproNombre(e.target.value)}
-                                    ></input>
+                                    />
                                 </div>
-
-                                <div className="flex items-center space-x-2 mb-3">
-                                    <span className="text-lg">
+                                <div className="grid grid-cols-2 gap-2 mb-3">
+                                    <div className="flex items-center space-x-2">
                                         <i className="fa-solid fa-pencil"></i>
-                                    </span>
+                                        <label className="text-sm">Descripción</label>
+                                    </div>
                                     <input
                                         type="text"
                                         id="pro_descripcion"
@@ -372,25 +483,32 @@ const ProductosInactivos = () => {
                                         placeholder="Descripción"
                                         value={pro_descripcion}
                                         onChange={(e) => setproDescripcion(e.target.value)}
-                                    ></input>
+                                    />
                                 </div>
-                                <div className="flex items-center space-x-2 mb-3">
-                                    <span className="text-lg">
+                                <div className="grid grid-cols-2 gap-2 mb-3">
+                                    <div className="flex items-center space-x-2">
                                         <i className="fa-solid fa-folder"></i>
-                                    </span>
-                                    <input
-                                        type="text"
+                                        <label className="text-sm">Categoría</label>
+                                    </div>
+                                    <select
                                         id="cat_id"
                                         className="border border-gray-200 rounded px-3 py-2 w-full"
-                                        placeholder="Categoría"
-                                        value={cat_id}
-                                        onChange={(e) => setcatId(e.target.value)}
-                                    ></input>
+                                        value={selectedCategory}
+                                        onChange={(e) => setSelectedCategory(e.target.value)}
+                                    >
+                                        <option value="">Elige una categoría</option>
+                                        {categoriaOptions.map((categoria, index) => (
+                                            <option key={index} value={categoria.cat_id}>
+                                                {categoria}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
-                                <div className="flex items-center space-x-2 mb-3">
-                                    <span className="text-lg">
+                                <div className="grid grid-cols-2 gap-2 mb-3">
+                                    <div className="flex items-center space-x-2">
                                         <i className="fa-solid fa-dollar"></i>
-                                    </span>
+                                        <label className="text-sm">IVA</label>
+                                    </div>
                                     <input
                                         type="text"
                                         id="pro_valor_iva"
@@ -398,12 +516,13 @@ const ProductosInactivos = () => {
                                         placeholder="Valor Iva"
                                         value={pro_valor_iva}
                                         onChange={(e) => setproValorIva(e.target.value)}
-                                    ></input>
+                                    />
                                 </div>
-                                <div className="flex items-center space-x-2 mb-3">
-                                    <span className="text-lg">
+                                <div className="grid grid-cols-2 gap-2 mb-3">
+                                    <div className="flex items-center space-x-2">
                                         <i className="fa-solid fa-dollar"></i>
-                                    </span>
+                                        <label className="text-sm">Costo</label>
+                                    </div>
                                     <input
                                         type="text"
                                         id="pro_costo"
@@ -411,12 +530,13 @@ const ProductosInactivos = () => {
                                         placeholder="Costo"
                                         value={pro_costo}
                                         onChange={(e) => setproCosto(e.target.value)}
-                                    ></input>
+                                    />
                                 </div>
-                                <div className="flex items-center space-x-2 mb-3">
-                                    <span className="text-lg">
+                                <div className="grid grid-cols-2 gap-2 mb-3">
+                                    <div className="flex items-center space-x-2">
                                         <i className="fa-solid fa-dollar"></i>
-                                    </span>
+                                        <label className="text-sm">PVP</label>
+                                    </div>
                                     <input
                                         type="text"
                                         id="pro_pvp"
@@ -424,35 +544,43 @@ const ProductosInactivos = () => {
                                         placeholder="PVP"
                                         value={pro_pvp}
                                         onChange={(e) => setproPvp(e.target.value)}
-                                    ></input>
+                                    />
                                 </div>
-                                <div className="flex items-center space-x-2 mb-3">
-                                    <span className="text-lg">
+                                <div className="grid grid-cols-2 gap-2 mb-3">
+                                    <div className="flex items-center space-x-2">
                                         <i className="fa-solid fa-image"></i>
-                                    </span>
-                                    <input
-                                        type="file"
-                                        id="pro_imagen"
-                                        className="border border-gray-200 rounded px-3 py-2 w-full hidden"
-                                        onChange={archivoHandler}
-                                    ></input>
-                                    <label
-                                        htmlFor="pro_imagen"
-                                        className="cursor-pointer bg-dark-purple text-white rounded-md px-4 py-2 transition duration-500 ease select-none hover:bg-violet-600 focus:outline-none focus:shadow-outline"
-                                    >
-                                        <i className="fas fa-upload mr-2"></i>Subir archivo
-                                    </label>
-                                    {pro_imagen && (
-                                        <div>
-                                            <img src={pro_imagen} alt="Imagen anterior" height="300px" width="150px" />
+                                        <label className="text-sm">Imagen</label>
+                                    </div>
+                                    <div className="flex flex-col items-end">
+                                        <div className="flex items-center space-x-2 w-full">
+                                            <input
+                                                type="file"
+                                                id="pro_imagen"
+                                                className="border border-gray-200 rounded px-3 py-2 w-full hidden"
+                                                onChange={archivoHandler}
+                                            />
+                                            <label
+                                                htmlFor="pro_imagen"
+                                                className="cursor-pointer bg-dark-purple text-white rounded-md px-4 py-2 transition duration-500 ease select-none hover:bg-violet-600 focus:outline-none focus:shadow-outline w-full flex items-center justify-center"
+                                            >
+                                                <i className="fas fa-upload mr-2"></i>Subir archivo
+                                            </label>
                                         </div>
-                                    )}
-                                    <button className='cursor-pointer bg-dark-purple text-white rounded-md px-4 py-2 transition duration-500 ease select-none hover:bg-violet-600 focus:outline-none focus:shadow-outline'>Cargar Imagen</button>
+                                        {pro_imagen && (
+                                            <div className="flex justify-center mt-2 w-full">
+                                                <img src={pro_imagen} alt="Imagen anterior" className="w-full" style={{ maxWidth: '80px' }} />
+                                            </div>
+                                        )}
+                                        <button className="cursor-pointer bg-dark-purple text-white rounded-md px-4 py-2 transition duration-500 ease select-none hover:bg-violet-600 focus:outline-none focus:shadow-outline mt-2 w-full">
+                                            Cargar Imagen
+                                        </button>
+                                    </div>
                                 </div>
-                                <div className="flex items-center space-x-2 mb-3">
-                                    <span className="text-lg">
+                                <div className="grid grid-cols-2 gap-2 mb-3">
+                                    <div className="flex items-center space-x-2">
                                         <i className="fa-solid fa-edit"></i>
-                                    </span>
+                                        <label className="text-sm">Estado</label>
+                                    </div>
                                     <input
                                         type="text"
                                         id="pro_estado"
@@ -460,7 +588,22 @@ const ProductosInactivos = () => {
                                         placeholder="Estado"
                                         value={pro_estado}
                                         onChange={(e) => setproEstado(e.target.value)}
-                                    ></input>
+                                    />
+                                </div>
+                                <div className="grid grid-cols-2 gap-2 mb-3">
+                                    <div className="flex items-center space-x-2">
+                                        <i className="fa-solid fa-edit"></i>
+                                        <label className="text-sm">Stock</label>
+                                    </div>
+                                    <input
+                                        type="text"
+                                        id="pro_stock"
+                                        className="border border-gray-200 rounded px-3 py-2 w-full"
+                                        placeholder="Stock"
+                                        value={pro_stock}
+                                        onChange={(e) => setproStock(e.target.value)}
+                                        disabled={true} // Agrega el atributo "disabled" con el valor true para inhabilitar el input
+                                    />
                                 </div>
                                 <div className="d-grid col-6 mx-auto flex justify-center">
                                     <button onClick={() => validar()} className="bg-dark-purple text-white p-3 rounded">
@@ -469,7 +612,6 @@ const ProductosInactivos = () => {
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </form>
             )}
