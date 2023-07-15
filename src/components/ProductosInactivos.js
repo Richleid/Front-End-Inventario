@@ -17,7 +17,7 @@ const ProductosInactivos = () => {
     const [pro_costo, setproCosto] = useState('');
     const [pro_pvp, setproPvp] = useState('');
     const [pro_imagen, setproImagen] = useState('');
-    const [pro_estado, setproEstado] = useState(true);
+    const [pro_estado, setproEstado] = useState('');
     const [pro_stock, setproStock] = useState('');
     const [operation, setoperation] = useState(1);
     const [title, setTittle] = useState('');
@@ -152,8 +152,9 @@ const ProductosInactivos = () => {
             setproCosto(pro_costo);
             setproPvp(pro_pvp);
             setproImagen(pro_imagen);
-            setproEstado(true);
+            setproEstado(false);
             setproStock(pro_stock);
+            setSelectedCategory(producto.cat_id);
         }
         window.setTimeout(function () {
             document.getElementById('pro_nombre').focus();
@@ -341,7 +342,7 @@ const ProductosInactivos = () => {
                                         key={productos.pro_id}
                                         className={`bg-white ${index % 2 === 0 ? 'bg-gray-50' : ''} hover:bg-gray-100`}
                                     >
-                                        <td className="flex justify-around space-x-4 items-center">
+                                        <td style={{ verticalAlign: 'middle' }}>
                                             <button
                                                 onClick={() =>
                                                     openModal(
@@ -581,14 +582,16 @@ const ProductosInactivos = () => {
                                         <i className="fa-solid fa-edit"></i>
                                         <label className="text-sm">Estado</label>
                                     </div>
-                                    <input
-                                        type="text"
-                                        id="pro_estado"
-                                        className="border border-gray-200 rounded px-3 py-2 w-full"
-                                        placeholder="Estado"
-                                        value={pro_estado}
-                                        onChange={(e) => setproEstado(e.target.value)}
-                                    />
+                                    <div className="flex items-center space-x-2">
+                                        <input
+                                            type="checkbox"
+                                            id="pro_estado"
+                                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                            checked={pro_estado}
+                                            onChange={(e) => setproEstado(e.target.checked)}
+                                        />
+                                        <p>{pro_estado ? "Activo" : "Inactivo"}</p>
+                                    </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-2 mb-3">
                                     <div className="flex items-center space-x-2">

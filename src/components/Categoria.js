@@ -216,7 +216,7 @@ const Categoria = () => {
                             <tbody className="divide-y-2 divide-gray-300">
                                 {currentCategories.map((categorias, index) => (
                                     <tr key={categorias.cat_id} className={`bg-white ${index % 2 === 0 ? 'bg-gray-50' : ''} hover:bg-gray-100`}>
-                                        <td className="flex justify-around space-x-4 items-center">
+                                        <td style={{ verticalAlign: 'middle' }}>
                                             <button
                                                 onClick={() =>
                                                     openModal(

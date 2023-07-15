@@ -11,7 +11,7 @@ function App() {
     { title: "Categorias Inactivas", src: "Calendar", href: "/CategoriasInactivas" },
     { title: "Search", src: "Search", href: "/" },
     { title: "Analytics", src: "Chart", href: "/" },
-    { title: "Archivos", src: "Folder", href: "/" },
+    { title: "Administracion de Ajustes", src: "Folder", href: "AdminAjustes" },
     
   ]
   const [open, setOpen] = useState(true)

@@ -1,7 +1,7 @@
 import Axios from 'axios';
 
 const AxiosProducto = async (url, condiciones = null, tipoPeticion, parametros = null) => {
-  const jwToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2ODkwOTU2NDIsImV4cCI6MTY4OTE4MjA0Mn0.AEJJSwO0kD7GW0zIKEL7LP2W8NOdKeXVTvhZGCzbAIo';
+  const jwToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2ODkzNDgyMzgsImV4cCI6MTY4OTQzNDYzOH0.sETc42QIW9YyDhdwIwk7M-SzL-_pmJiLFzg5yAlNaEo';
   const baseUrl = 'https://inventarioproductos.onrender.com';
   let peticion;
 
