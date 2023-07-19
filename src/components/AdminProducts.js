@@ -21,7 +21,7 @@ const AdminProducts = () => {
     const [pro_stock, setproStock] = useState('');
     const [operation, setoperation] = useState(1);
     const [title, setTittle] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState(null);
+    const [selectedCategory, setSelectedCategory] = useState('');
     const [categoriaOptions, setCategoriaOptions] = useState([]);
 
     const [imageModalOpen, setImageModalOpen] = useState(false);
@@ -78,11 +78,7 @@ const AdminProducts = () => {
         getCategorias();
         getCategoryIdFromName();
         subida();
-        if(selectedCategory) {
-            // Aquí actualizas el producto cada vez que cambia la categoría seleccionada
-            actualizarProducto();
-          }
-    }, [selectedCategory]);
+    }, []);
 
     const getProductos = async () => {
         try {
@@ -349,7 +345,6 @@ const AdminProducts = () => {
                                         doc.nombre === productos.pro_nombre &&
                                         doc.url === productos.pro_imagen
                                 );
-
                                 return (
                                     <tr
                                         key={productos.pro_id}

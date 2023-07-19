@@ -12,6 +12,7 @@ function App() {
     { title: "Search", src: "Search", href: "/" },
     { title: "Analytics", src: "Chart", href: "/" },
     { title: "Administracion de Ajustes", src: "Folder", href: "AdminAjustes" },
+    { title: "Auditoria", src: "Folder", href: "Auditoria" },
     
   ]
   const [open, setOpen] = useState(true)

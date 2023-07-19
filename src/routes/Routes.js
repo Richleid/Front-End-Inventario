@@ -7,6 +7,7 @@ import CategoriaInactivas from '../components/CategoriasInactivas'
 import CategoriasInactivas from '../components/CategoriasInactivas'
 import AdminAjustes from '../components/AdminAjustes'
 import Login from '../components/Login'
+import Auditoria from '../components/Auditoria'
 
 const Rutas = () => {
     return (
@@ -25,6 +26,9 @@ const Rutas = () => {
                 </Route>
                 <Route path='/Login' element={<Login />}>
                 </Route>
+                <Route path='/Auditoria' element={<Auditoria />}>
+                </Route>
+                
                 
             </Routes>
     )
