@@ -13,7 +13,8 @@ function App() {
     { title: "Analytics", src: "Chart", href: "/" },
     { title: "Administracion de Ajustes", src: "Folder", href: "AdminAjustes" },
     { title: "Auditoria", src: "Folder", href: "Auditoria" },
-    
+    { title: "Administracion de ajuste", src: "Chart_fill", href: "/AdminEditAjuste" },
+    { title: "Kardex", src: "Folder", href: "/KardexProductos" }
   ]
   const [open, setOpen] = useState(true)
   return (

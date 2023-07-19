@@ -5,6 +5,8 @@ import withReactContent from 'sweetalert2-react-content';
 import { show_alerta } from '../functions';
 import AxiosProducto from '../components/AxiosProducto';
 import { app } from '../fb';
+import PDFButton from "./PDFButton";
+import PDFButtonProducts from "./PDFButtonProducts";
 
 const AdminProducts = () => {
     const [modalOpen, setModalOpen] = useState(false);
@@ -27,6 +29,9 @@ const AdminProducts = () => {
     const [imageModalOpen, setImageModalOpen] = useState(false);
     const [selectedImageUrl, setSelectedImageUrl] = useState("");
     const [docus, setDocus] = useState([]);
+
+    //PDFC/U
+    const [selectedProductId, setSelectedProductId] = useState(null);
 
     //Búsqueda
     const [searchTerm, setSearchTerm] = useState("");
@@ -318,6 +323,9 @@ const AdminProducts = () => {
                             <button onClick={() => openModal(1)} className="bg-dark-purple text-white p-3 rounded">
                                 <i className="fa-solid fa-circle-plus"></i>Añadir
                             </button>
+                            <div style={{ position: "absolute", top: "1.5%", right: "7.5%" }}>
+                                <PDFButton data={producto} />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -372,6 +380,10 @@ const AdminProducts = () => {
                                             >
                                                 <i className="fa-solid fa-edit text-white"></i>
                                             </button>
+                                            <PDFButtonProducts
+                                                selectedProduct={productos}
+                                                setSelectedProductId={setSelectedProductId}
+                                            />
                                         </td>
                                         <td>{productos.pro_id}</td>
                                         <td>{productos.pro_nombre}</td>
@@ -502,7 +514,7 @@ const AdminProducts = () => {
                                     <select
                                         id="cat_id"
                                         className="border border-gray-200 rounded px-3 py-2 w-full"
-                                        value={selectedCategory || ''} 
+                                        value={selectedCategory || ''}
                                         onChange={handleCategoryChange}
                                     >
                                         <option value="">Elige una categoría</option>

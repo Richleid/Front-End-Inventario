@@ -8,11 +8,15 @@ import CategoriasInactivas from '../components/CategoriasInactivas'
 import AdminAjustes from '../components/AdminAjustes'
 import Login from '../components/Login'
 import Auditoria from '../components/Auditoria'
+import AdminAjuste from '../components/AdminAjuste'
+import KardexProductos from '../components/KardexProductos'
 
 const Rutas = () => {
     return (
             <Routes>
                 <Route path='/' element={<Home />}>
+                </Route>
+                <Route path='/AdminEditAjuste' element={<AdminAjuste />}>
                 </Route>
                 <Route path='/AdminProduct' element={<AdminProducts />}>
                 </Route>
@@ -28,8 +32,8 @@ const Rutas = () => {
                 </Route>
                 <Route path='/Auditoria' element={<Auditoria />}>
                 </Route>
-                
-                
+                <Route path='/KardexProductos' element={<KardexProductos />}>
+            </Route>                
             </Routes>
     )
 }
