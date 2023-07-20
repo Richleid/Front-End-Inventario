@@ -23,6 +23,7 @@ function App() {
       { title: "Admnistración Categoria", src: "User", href: "/Categoria" },
       { title: "Kardex", src: "Folder", href: "/KardexProductos" },
       { title: "Productos Inactivos", src: "Chat", href: "/ProductosInactivos" },
+      { title: "Actualizar ajuste", src: "Chat", href: "/AdminEditAjuste" },
     ],
     bodeguero: [
       { title: "Administracion de Ajustes", src: "Folder", href: "/AdminAjustes" },
