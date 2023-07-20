@@ -6,6 +6,7 @@ import CardsContent from './Table/CardsContent'
 import TableHeader from './Table/TableHeader'
 import CircularWithValueLabel from '../helpers/CircularProgressWithLabel'
 import { useEffect, useRef } from 'react'
+import PDFButtonKardex from './PDFButtonKardex'
 
 const KardexProductos = () => {
     const [respuestaDatos, setRespuestaDatos] = useState()
@@ -146,6 +147,9 @@ const KardexProductos = () => {
                     </table>
                     <div className='w-full mt-4 h-1/2 invisible absolute md:relative md:visible'>
                         <PaginationButtons itemsPerPage={itemsPerPage} onPageChange={handlePageChange} />
+                    </div>
+                    <div>
+                        <PDFButtonKardex datosProductoBuscado={datosProductoBuscado} currentData={currentData} />
                     </div>
                 </div>
             </div>
