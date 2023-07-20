@@ -118,7 +118,19 @@ const Auditoria = () => {
                                         className={`bg-white ${index % 2 === 0 ? 'bg-gray-50' : ''} hover:bg-gray-100`}
                                     >
                                         <td className="py-3">{auditorias.aud_id}</td>
-                                        <td className="py-3">{new Date(auditorias.aud_fecha).toLocaleString()}</td>
+                                        <td className="py-3">
+                                            {
+                                                new Date(
+                                                    auditorias.aud_fecha.substr(0, 10).split('-')[0],  // año
+                                                    auditorias.aud_fecha.substr(0, 10).split('-')[1] - 1,  // mes (JavaScript cuenta los meses desde 0)
+                                                    auditorias.aud_fecha.substr(0, 10).split('-')[2],  // día
+                                                    auditorias.aud_fecha.substr(11, 8).split(':')[0],  // hora
+                                                    auditorias.aud_fecha.substr(11, 8).split(':')[1],  // minuto
+                                                    auditorias.aud_fecha.substr(11, 8).split(':')[2]  // segundo
+                                                ).toLocaleString()
+                                            }
+                                        </td>
+
                                         <td className="py-3">{auditorias.aud_accion}</td>
                                         <td className="py-3">{auditorias.aud_modulo}</td>
                                         <td className="py-3">{auditorias.aud_funcionalidad}</td>

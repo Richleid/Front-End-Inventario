@@ -108,13 +108,13 @@ const AdminAjustes = () => {
   };
   const getProductos = async () => {
     try {
-        const productos = await AxiosProducto('/productos', null, 'get');
-        setProductos(productos);
-        console.log(productos);
+      const productos = await AxiosProducto('/productos', null, 'get');
+      setProductos(productos);
+      console.log(productos);
     } catch (error) {
-        console.error('Error fetching products', error);
+      console.error('Error fetching products', error);
     }
-};
+  };
   const handleSubmit = async (event) => {
     try {
       const responseAjuste = await axios.post(
@@ -363,15 +363,9 @@ const AdminAjustes = () => {
                 >
                   <td style={{ verticalAlign: 'middle' }}>
                     <button
-                      onClick={() =>
-                        openModal(
-                          2,
-                          ajuste.aju_numero,
-                          ajuste.aju_fecha,
-                          ajuste.aju_descripcion,
-                          ajuste.aju_estado
-                        )
-                      }
+                      onClick={() => {
+                        window.location.href = '/AdminEditAjuste';
+                      }}
                       className="bg-dark-purple p-2 rounded-full"
                       style={{ width: "37px", height: "40px" }}
                     >
@@ -382,7 +376,6 @@ const AdminAjustes = () => {
                   <td>{ajuste.aju_fecha}</td>
                   <td>{ajuste.aju_descripcion}</td>
                   <td>{ajuste.aju_estado ? "Activo" : "Inactivo"}</td>
-
                 </tr>
               ))}
             </tbody>

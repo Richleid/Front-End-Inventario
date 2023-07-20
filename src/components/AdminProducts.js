@@ -358,7 +358,12 @@ const AdminProducts = () => {
                                         key={productos.pro_id}
                                         className={`bg-white ${index % 2 === 0 ? 'bg-gray-50' : ''} hover:bg-gray-100`}
                                     >
-                                        <td style={{ verticalAlign: 'middle' }}>
+                                        <td style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                            <PDFButtonProducts
+                                                selectedProduct={productos}
+                                                setSelectedProductId={setSelectedProductId}
+                                                style={{ marginLeft: '10px' }}
+                                            />
                                             <button
                                                 onClick={() =>
                                                     openModal(
@@ -376,15 +381,13 @@ const AdminProducts = () => {
                                                     )
                                                 }
                                                 className="bg-dark-purple p-2 rounded-full"
-                                                style={{ width: '37px', height: '40px' }}
+                                                style={{ width: '37px', height: '40px', marginRight: '10px' }}
                                             >
                                                 <i className="fa-solid fa-edit text-white"></i>
                                             </button>
-                                            <PDFButtonProducts
-                                                selectedProduct={productos}
-                                                setSelectedProductId={setSelectedProductId}
-                                            />
+
                                         </td>
+
                                         <td>{productos.pro_id}</td>
                                         <td>{productos.pro_nombre}</td>
                                         <td>{productos.pro_descripcion}</td>
