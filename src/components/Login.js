@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 
-function Login() {
-  const [email, setEmail] = useState('');
+function Login({ setUserRole }) {
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
+  const handleUsernameChange = (e) => {
+    setUsername(e.target.value);
   };
 
   const handlePasswordChange = (e) => {
@@ -16,28 +16,30 @@ function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!email.trim()) {
-      setError('Porfavor ingrese su email');
+    if (!username.trim()) {
+      setError('Por favor ingrese su usuario');
       return;
     }
 
     if (!password.trim()) {
-      setError('Porfavor ingrese su clave');
+      setError('Por favor ingrese su clave');
       return;
     }
 
-    if (email === 'usuario1@example.com' && password === 'password1') {
-      // Autenticación exitosa, redirigir a la página principal
+    // Aquí definimos la lista de usuarios con sus credenciales
+    const users = [
+      { username: 'administrador', password: 'admin123', role: 'administrador' },
+      { username: 'bodeguero', password: 'bodeguero123', role: 'bodeguero' },
+      { username: 'auditor', password: 'auditor123', role: 'auditor' },
+    ];
+
+    // Validamos si el usuario existe y las credenciales coinciden
+    const user = users.find((user) => user.username === username && user.password === password);
+
+    if (user) {
+      // Autenticación exitosa, redirigir al usuario según su rol
       setError('');
-      window.location.href = '/pagina-principal';
-    } else if (email === 'usuario2@example.com' && password === 'password2') {
-      // Autenticación exitosa, redirigir a la página principal
-      setError('');
-      window.location.href = '/pagina-principal';
-    } else if (email === 'usuario3@example.com' && password === 'password3') {
-      // Autenticación exitosa, redirigir a la página principal
-      setError('');
-      window.location.href = '/pagina-principal';
+      setUserRole(user.role); // Establecemos el rol del usuario
     } else {
       // Autenticación fallida, mostrar mensaje de error
       setError('Credenciales incorrectas');
@@ -105,15 +107,15 @@ function Login() {
         <h2 style={titleStyles}>Login</h2>
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: '1rem' }}>
-            <label htmlFor="email" style={labelStyles}>
-              Email:
+            <label htmlFor="username" style={labelStyles}>
+              Usuario: 
             </label>
             <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={handleEmailChange}
-              placeholder="Enter your email"
+              type="text" 
+              id="username" 
+              value={username}
+              onChange={handleUsernameChange} 
+              placeholder="Enter your username" 
               style={inputStyles}
             />
           </div>
@@ -141,6 +143,8 @@ function Login() {
 }
 
 export default Login;
+
+
 
 
 

@@ -79,7 +79,7 @@ const PDFButton = ({ data }) => {
               <View>
                 <View>
                   <View>
-                    <Image style={styles.image} src={require('../assets/img/nuree1.png')} />
+                    <Image style={styles.image} src={require('../assets/img/nuree1_1.png')} />
                   </View>
                   <View style={styles.subtitle}>
                     <Text>Reporte de Productos</Text>

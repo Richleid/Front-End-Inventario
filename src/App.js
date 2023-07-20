@@ -1,27 +1,53 @@
-import React, { useState } from 'react'
-import imgSrc from './assets/img/imgMenu'
-import { BrowserRouter as Router, Link } from 'react-router-dom'
-import RoutPages from './routes/Routes'
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Link } from 'react-router-dom';
+import RoutPages from './routes/Routes';
+import Login from './components/Login';
+import imgSrc from './assets/img/imgMenu';
 
 function App() {
-  const OptionsNavBar = [
-    { title: "Administracion de Productos", src: "Chart_fill", href: "/AdminProduct" },
-    { title: "Productos Inactivos", src: "Chat", href: "/ProductosInactivos" },
-    { title: "Admnistración Categoria", src: "User", href: "/Categoria" },
-    { title: "Categorias Inactivas", src: "Calendar", href: "/CategoriasInactivas" },
-    { title: "Search", src: "Search", href: "/" },
-    { title: "Analytics", src: "Chart", href: "/" },
-    { title: "Administracion de Ajustes", src: "Folder", href: "AdminAjustes" },
-    { title: "Auditoria", src: "Folder", href: "Auditoria" },
-    { title: "Administracion de ajuste", src: "Chart_fill", href: "/AdminEditAjuste" },
-    { title: "Kardex", src: "Folder", href: "/KardexProductos" }
-  ]
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState(true);
+  const [userRole, setUserRole] = useState(null);
+
+  // Definimos las rutas de redirección para cada rol
+  const defaultRoute = {
+    administrador: '/',
+    bodeguero: '/',
+    auditor: '/',
+  };
+
+  // Definimos las opciones del menú para cada rol
+  const OptionsNavBar = {
+    administrador: [
+      { title: "Administracion de Ajustes", src: "Folder", href: "/AdminAjustes" },
+      { title: "Administracion de Productos", src: "Chart_fill", href: "/AdminProduct" },
+      { title: "Admnistración Categoria", src: "User", href: "/Categoria" },
+      { title: "Kardex", src: "Folder", href: "/KardexProductos" },
+      { title: "Productos Inactivos", src: "Chat", href: "/ProductosInactivos" },
+    ],
+    bodeguero: [
+      { title: "Administracion de Ajustes", src: "Folder", href: "/AdminAjustes" },
+    ],
+    auditor: [
+      { title: "Auditoria", src: "Folder", href: "/Auditoria" },
+    ],
+  };
+
+  const handleLogin = (role) => {
+    console.log('Usuario autenticado. Rol:', role);
+    setUserRole(role);
+  };
+
+  const handleLogout = () => {
+    setUserRole(null); // Borramos la información del usuario
+    window.location.href = '/Login'; // Redirigimos al usuario a la página de inicio de sesión
+  };
+
+  console.log('Estado actual de userRole:', userRole);
+
   return (
     <Router>
       <div className="flex">
-        <div className={`${open ? "w-80" : "w-20"} duration-300 pl-2 h-screen gap-4 bg-dark-purple
-     relative`}>
+        <div className={`${open ? "w-80" : "w-20"} duration-300 pl-2 h-screen gap-4 bg-dark-purple relative`}>
           <img src={imgSrc['control']} alt=''
             className={`${!open && "rotate-180"} absolute cursor-pointer rounded-full -right-3
        top-12 w-7 border-2 border-dark-purple`}
@@ -36,7 +62,7 @@ function App() {
             </h1>
           </div>
           <ul className={`${open ? "p-10 pt-5" : "p-0 pt-5"} duration-300`}>
-            {OptionsNavBar.map((menu, index) => (
+            {userRole && OptionsNavBar[userRole].map((menu, index) => (
               <li key={index} className={`${menu.gap ? "mt-9" : "mt-2"} text-gray-300 text-sm flex items-center align-middle
         gap-x-4 cursor-pointer p-2 rounded-md mr-0 hover:bg-blue-500 duration-300`}>
                 <Link to={menu.href} className={`origin-left duration-300 flex items-center align-middle gap-x-4`}>
@@ -46,26 +72,28 @@ function App() {
               </li>
             ))}
           </ul>
-          <div className='flex gap-x-4 items-center mt-10 cursor-pointer'>
-            <img src={imgSrc['Setting']} className={`w-6 ml-2`} alt='img-setting' />
-            <h1 className={`${!open && "scale-0 m-14"} text-white font-semibold origin-left textx1 duration-300`}>Settings</h1>
+          <div>
+            {userRole !== null && (
+              <div className='flex gap-x-4 items-center mt-10 cursor-pointer' onClick={handleLogout}>
+                {/* Agregamos el evento onClick para llamar a la función handleLogout */}
+                <img src={imgSrc['Setting']} className={`w-6 ml-2`} alt='img-setting' />
+                <h1 className={`${!open && "scale-0 m-14"} text-white font-semibold origin-left textx1 duration-300`}>Cerrar Sesion</h1>
+              </div>
+            )}
           </div>
         </div>
-        <div className={`font-semibold text-sm
-        h-screen relative flex justify-center w-full`}>
-          <RoutPages />
+        <div className={`font-semibold text-sm h-screen relative flex justify-center w-full`}>
+          {userRole === null ? (
+            <Login setUserRole={handleLogin} />
+          ) : (
+            <div>
+              <RoutPages />
+            </div>
+          )}
         </div>
       </div>
     </Router>
-  )
+  );
 }
 
-function renderApp() {
-  return (
-    <div>
-      {App()}
-    </div>
-  )
-
-}
-export default renderApp
+export default App;

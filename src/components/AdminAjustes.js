@@ -6,6 +6,7 @@ import { show_alerta } from "../functions";
 import AxiosProducto from "../components/AxiosProducto";
 import axios from "axios";
 
+
 const AdminAjustes = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [ajustes, setAjustes] = useState([]);
