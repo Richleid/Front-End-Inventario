@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import ImgProd from "../assets/img/Switch_productos_nuevo.webp";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { show_alerta } from "../functions";
 import AxiosProducto from "../components/AxiosProducto";
 import axios from "axios";
+import UserContext from '../UserContext';
+import { BrowserRouter as Router, Link, Routes, Route } from 'react-router-dom'
+import AdminAjuste from "./AdminAjuste";
 
 
 const AdminAjustes = () => {
@@ -16,6 +19,7 @@ const AdminAjustes = () => {
   const [aju_estado, setajuEstado] = useState(true);
   const [operation, setoperation] = useState(1);
   const [title, setTittle] = useState("");
+  const { user } = useContext(UserContext);
 
   const [proId, setProId] = useState("");
   const [ajuDetCantidad, setAjuDetCantidad] = useState("");
@@ -95,6 +99,7 @@ const AdminAjustes = () => {
     setDetalles((detalles) => [
       ...detalles,
       {
+        aud_usuario:user,
         pro_id: proId,
         aju_det_cantidad: cantidadFinal,
         aju_det_modificable: ajuDetModificable,
@@ -121,6 +126,7 @@ const AdminAjustes = () => {
       const responseAjuste = await axios.post(
         "https://inventarioproductos.onrender.com/ajustes/nuevo",
         {
+          aud_usuario:user,
           aju_fecha: aju_fecha,
           aju_descripcion: aju_descripcion,
           aju_estado: aju_estado,
@@ -128,7 +134,7 @@ const AdminAjustes = () => {
         {
           headers: {
             Authorization:
-              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2ODkyMjA2MTgsImV4cCI6MTY4OTMwNzAxOH0.Otf-hvIlFotWRhEpj8L1z8eP1WWOSeAFj5GgxhiRQT8",
+              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2OTAxNzI3NDcsImV4cCI6MTY5MDI1OTE0N30.LYt5cNwvhbfwh15Zt1WiL1pXQqCsYqCjuAQBSY5llGQ",
           },
         }
       );
@@ -158,7 +164,7 @@ const AdminAjustes = () => {
             {
               headers: {
                 Authorization:
-                  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2ODkyMjA2MTgsImV4cCI6MTY4OTMwNzAxOH0.Otf-hvIlFotWRhEpj8L1z8eP1WWOSeAFj5GgxhiRQT8",
+                  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2OTAxNzI3NDcsImV4cCI6MTY5MDI1OTE0N30.LYt5cNwvhbfwh15Zt1WiL1pXQqCsYqCjuAQBSY5llGQ",
               },
             }
           );
@@ -192,7 +198,7 @@ const AdminAjustes = () => {
           {
             headers: {
               Authorization:
-                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2ODkyMjA2MTgsImV4cCI6MTY4OTMwNzAxOH0.Otf-hvIlFotWRhEpj8L1z8eP1WWOSeAFj5GgxhiRQT8",
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2OTAxNzI3NDcsImV4cCI6MTY5MDI1OTE0N30.LYt5cNwvhbfwh15Zt1WiL1pXQqCsYqCjuAQBSY5llGQ",
             },
           }
         );
@@ -278,6 +284,7 @@ const AdminAjustes = () => {
       show_alerta("Elige el estado del ajuste", "warning");
     } else {
       parametros = {
+        aud_usuario:user,
         aju_fecha: aju_fecha,
         aju_descripcion: aju_descripcion,
         aju_estado: aju_estado,
@@ -363,17 +370,15 @@ const AdminAjustes = () => {
                     } hover:bg-gray-100`}
                 >
                   <td style={{ verticalAlign: 'middle' }}>
-                    <button
-                      onClick={() => {
-                        window.location.href = '/AdminEditAjuste';
-                      }}
-                      className="bg-dark-purple p-2 rounded-full"
-                      style={{ width: "37px", height: "40px" }}
-                    >
+                  <Link to={'/AdminEditAjuste'} className="bg-dark-purple p-2 rounded-full">
                       <i className="fa-solid fa-edit text-white"></i>
-                    </button>
+                    </Link>
+                    <Routes>
+                      <Route path="/AdminEditAjuste" element={<AdminAjuste />}>
+                      </Route>
+                    </Routes>
                   </td>
-                  <td>{ajuste.aju_numero}</td>
+                  <td className="p-3">{ajuste.aju_numero}</td>
                   <td>{ajuste.aju_fecha}</td>
                   <td>{ajuste.aju_descripcion}</td>
                   <td>{ajuste.aju_estado ? "Activo" : "Inactivo"}</td>

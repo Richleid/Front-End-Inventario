@@ -1,21 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { show_alerta } from '../functions';
 import AxiosProducto from '../components/AxiosProducto';
+import UserContext from '../UserContext';
+import { format } from 'date-fns';
 
 const Auditoria = () => {
     const [auditoria, setAuditoria] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [searchColumn, setSearchColumn] = useState("");
+    const { user } = useContext(UserContext);
 
     const columns = [
         { value: "", label: "Buscar en todas las columnas" },
         { value: "aud_id", label: "ID" },
+        { value: "aud_usuario", label: "Usuario" },
         { value: "aud_fecha", label: "Fecha" },
         { value: "aud_accion", label: "Acción" },
         { value: "aud_modulo", label: "Módulo" },
         { value: "aud_funcionalidad", label: "Funcionalidad" },
         { value: "aud_observacion", label: "Observación" },
-        { value: "usu_id", label: "Usuario" },
     ];
 
     const filteredAuditoria = auditoria.filter((auditorias) => {
@@ -27,7 +30,7 @@ const Auditoria = () => {
                 auditorias.aud_funcionalidad,
                 auditorias.aud_observacion,
                 auditorias.aud_id.toString(),
-                auditorias.usu_id.toString(),
+                auditorias.aud_usuario,
             ];
             return searchFields.some((field) =>
                 field.toLowerCase().includes(searchTerm.toLowerCase())
@@ -102,12 +105,12 @@ const Auditoria = () => {
                         <thead className="bg-dark-purple  text-white">
                             <tr>
                                 <th className="px-10 py-2 text-center text-sm">ID</th>
+                                <th className="px-10 py-2 text-center text-sm">USUARIO</th>
                                 <th className="px-10 py-2 text-center text-sm">FECHA Y HORA</th>
                                 <th className="px-10 py-2 text-center text-sm">ACCIÓN</th>
                                 <th className="px-10 py-2 text-center text-sm">MÓDULO</th>
                                 <th className="px-10 py-2 text-center text-sm">FUNCIONALIDAD</th>
                                 <th className="px-10 py-2 text-center text-sm">OBSERVACIÓN</th>
-                                <th className="px-10 py-2 text-center text-sm">USUARIO</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y-2 divide-gray-300">
@@ -118,24 +121,15 @@ const Auditoria = () => {
                                         className={`bg-white ${index % 2 === 0 ? 'bg-gray-50' : ''} hover:bg-gray-100`}
                                     >
                                         <td className="py-3">{auditorias.aud_id}</td>
+                                        <td className="py-3">{auditorias.aud_usuario}</td>
                                         <td className="py-3">
-                                            {
-                                                new Date(
-                                                    auditorias.aud_fecha.substr(0, 10).split('-')[0],  // año
-                                                    auditorias.aud_fecha.substr(0, 10).split('-')[1] - 1,  // mes (JavaScript cuenta los meses desde 0)
-                                                    auditorias.aud_fecha.substr(0, 10).split('-')[2],  // día
-                                                    auditorias.aud_fecha.substr(11, 8).split(':')[0],  // hora
-                                                    auditorias.aud_fecha.substr(11, 8).split(':')[1],  // minuto
-                                                    auditorias.aud_fecha.substr(11, 8).split(':')[2]  // segundo
-                                                ).toLocaleString()
-                                            }
+                                            {/* Formatear la fecha utilizando date-fns */}
+                                            {format(new Date(auditorias.aud_fecha), 'yyyy-MM-dd HH:mm:ss')}
                                         </td>
-
                                         <td className="py-3">{auditorias.aud_accion}</td>
                                         <td className="py-3">{auditorias.aud_modulo}</td>
                                         <td className="py-3">{auditorias.aud_funcionalidad}</td>
                                         <td className="py-3">{auditorias.aud_observacion}</td>
-                                        <td className="py-3">{auditorias.usu_id}</td>
                                     </tr>
                                 );
                             })}

@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState} from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
 
 function Login({ setUserRole }) {
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -13,7 +17,7 @@ function Login({ setUserRole }) {
     setPassword(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!username.trim()) {
@@ -26,23 +30,30 @@ function Login({ setUserRole }) {
       return;
     }
 
-    // Aquí definimos la lista de usuarios con sus credenciales
-    const users = [
-      { username: 'administrador', password: 'admin123', role: 'administrador' },
-      { username: 'bodeguero', password: 'bodeguero123', role: 'bodeguero' },
-      { username: 'auditor', password: 'auditor123', role: 'auditor' },
-    ];
+    try {
+      const response = await axios.get(
+        `http://20.163.192.189:8080/api/login?user_username=${username}&user_password=${password}&mod_name=Inventario`,
+        {
+          headers: {
+            Authorization:
+              'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwODA0MzIxMzcwIiwiZXhwIjoxNjk0OTg1NDgyfQ.GljEqO4wDKT_x94OIQ76k2AraJUY4YKAwBFrfs-ZsMQ',
+          },
+        }
+      );
 
-    // Validamos si el usuario existe y las credenciales coinciden
-    const user = users.find((user) => user.username === username && user.password === password);
+      const data = response.data;
 
-    if (user) {
-      // Autenticación exitosa, redirigir al usuario según su rol
-      setError('');
-      setUserRole(user.role); // Establecemos el rol del usuario
-    } else {
-      // Autenticación fallida, mostrar mensaje de error
-      setError('Credenciales incorrectas');
+      // Si el usuario es válido y las credenciales son correctas
+      if (data && data.user && data.user.usr_user === username) {
+        setError('');
+        setUserRole("Usuario: "+data.user.usr_first_name +" "+ data.user.usr_first_lastname, data.user.usr_user); // Establecemos el rol del usuario basado en su nombre de usuario
+        navigate("/");
+      } else {
+        setError('Credenciales incorrectas');
+      }
+    } catch (error) {
+      console.error('Error al autenticar al usuario:', error);
+      setError('Hubo un error al autenticar al usuario. Por favor, inténtelo de nuevo más tarde.');
     }
   };
 
@@ -143,26 +154,3 @@ function Login({ setUserRole }) {
 }
 
 export default Login;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

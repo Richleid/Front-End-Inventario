@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import ImgProd from '../assets/img/Switch_productos_nuevo.webp';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { show_alerta } from '../functions';
 import AxiosProducto from '../components/AxiosProducto';
+import UserContext from '../UserContext';
+import Login from './Login';
+import App from '../App';
 
 const Categoria = () => {
     const [modalOpen, setModalOpen] = useState(false);
@@ -13,6 +16,7 @@ const Categoria = () => {
     const [cat_estado, setcatEstado] = useState('');
     const [operation, setoperation] = useState(1);
     const [title, setTittle] = useState('');
+    const { user } = useContext(UserContext);
 
     //Búsqueda
     const [searchTerm, setSearchTerm] = useState("");
@@ -50,12 +54,12 @@ const Categoria = () => {
     const categoriesPerPage = 10;
 
     const indexOfLastCategory = currentPage * categoriesPerPage;
-    const indexOfFirstCategory = indexOfLastCategory - categoriesPerPage; 
-    const currentCategories= filteredCategories.slice(
+    const indexOfFirstCategory = indexOfLastCategory - categoriesPerPage;
+    const currentCategories = filteredCategories.slice(
         indexOfFirstCategory,
         indexOfLastCategory
     );
-    
+
     useEffect(() => {
         getCategorias();
     }, []);
@@ -112,6 +116,7 @@ const Categoria = () => {
             show_alerta('Escribe el nombre de la categoría', 'warning');
         } else {
             parametros = {
+                aud_usuario: user,
                 cat_nombre: cat_nombre,
                 cat_estado: cat_estado
             };
@@ -159,6 +164,7 @@ const Categoria = () => {
         try {
             // Resto de la lógica para obtener los datos actualizados del producto
             const parametros = {
+                aud_usuario: user,
                 cat_id: cat_id,
                 cat_nombre: cat_nombre,
                 cat_estado: cat_estado
@@ -177,7 +183,7 @@ const Categoria = () => {
                 <div className="flex mt-4">
                     <div className="w-1/2 ">
                         <div className="flex justify-between">
-                        <select
+                            <select
                                 value={searchColumn}
                                 onChange={handleColumnChange}
                                 className="p-2 border-2 border-gray-200 rounded-md"
@@ -206,10 +212,10 @@ const Categoria = () => {
                         <table className="w-full border-collapse divide-y divide-x divide-gray-500 text-center">
                             <thead className="bg-dark-purple  text-white">
                                 <tr>
-                                    <th className="px-6 py-2 text-center text-sm">OPCIONES</th>
-                                    <th className="px-6 py-2 text-center text-sm">ID</th>
-                                    <th className="px-6 py-2 text-center text-sm">CATEGORÍA</th>
-                                    <th className="px-6 py-2 text-center text-sm">ESTADO</th>
+                                    <th className="px-20 py-2 text-center text-sm">OPCIONES</th>
+                                    <th className="px-20 py-2 text-center text-sm">ID</th>
+                                    <th className="px-20 py-2 text-center text-sm">CATEGORÍA</th>
+                                    <th className="px-20 py-2 text-center text-sm">ESTADO</th>
                                 </tr>
                             </thead>
 

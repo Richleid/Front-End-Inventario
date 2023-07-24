@@ -1,10 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import ImgProd from '../assets/img/Switch_productos_nuevo.webp';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { show_alerta } from '../functions';
 import AxiosProducto from '../components/AxiosProducto';
 import { app } from '../fb';
+import userEvent from '@testing-library/user-event';
+import UserContext from '../UserContext';
+import Login from './Login';
+import App from '../App';
 
 const ProductosInactivos = () => {
     const [modalOpen, setModalOpen] = useState(false);
@@ -23,6 +27,7 @@ const ProductosInactivos = () => {
     const [title, setTittle] = useState('');
     const [selectedCategory, setSelectedCategory] = useState("");
     const [categoriaOptions, setCategoriaOptions] = useState([]);
+    const { user } = useContext(UserContext);
 
     const [imageModalOpen, setImageModalOpen] = useState(false);
     const [selectedImageUrl, setSelectedImageUrl] = useState("");
@@ -132,12 +137,12 @@ const ProductosInactivos = () => {
         setproNombre('');
         setproDescripcion('');
         setcatId('');
-        setproValorIva('');
+        setproValorIva(true);
         setproCosto('');
         setproPvp('');
         setproImagen('');
         setproStock('');
-        setproEstado(true);
+        setproEstado(false);
         setoperation(op);
         setModalOpen(true);
         if (op === 1) {
@@ -154,7 +159,6 @@ const ProductosInactivos = () => {
             setproImagen(pro_imagen);
             setproEstado(false);
             setproStock(pro_stock);
-            setSelectedCategory(producto.cat_id);
         }
         window.setTimeout(function () {
             document.getElementById('pro_nombre').focus();
@@ -180,8 +184,6 @@ const ProductosInactivos = () => {
             show_alerta('Escribe el valor de IVA', 'warning');
         } else if (pro_costo === '') {
             show_alerta('Escribe el costo del producto', 'warning');
-        } else if (pro_pvp === '') {
-            show_alerta('Escribe el pvp del producto', 'warning');
         } else if (pro_imagen.trim() === '') {
             show_alerta('Añade una imagen al producto', 'warning');
         } else {
@@ -194,7 +196,6 @@ const ProductosInactivos = () => {
                     cat_id: categoryObject.cat_id,
                     pro_valor_iva: pro_valor_iva,
                     pro_costo: pro_costo,
-                    pro_pvp: pro_pvp,
                     pro_imagen: pro_imagen,
                     pro_estado: pro_estado
                 };
@@ -244,25 +245,29 @@ const ProductosInactivos = () => {
     const actualizarProducto = async () => {
         try {
             const parametros = {
+                aud_usuario: user,
                 pro_id: pro_id,
                 pro_nombre: pro_nombre,
                 pro_descripcion: pro_descripcion,
                 cat_id: cat_id,
                 pro_valor_iva: pro_valor_iva,
                 pro_costo: pro_costo,
-                pro_pvp: pro_pvp,
                 pro_imagen: pro_imagen,
                 pro_estado: pro_estado
             };
             const metodo = 'put';
             const urlOperacion = '/ActualizarProducto';
             enviarSolicitud(metodo, urlOperacion, parametros);
+            setSelectedCategory(null);
         } catch (error) {
             console.log(error);
             // Maneja el error según tus necesidades
         }
     };
 
+    const handleCategoryChange = (event) => {
+        setSelectedCategory(event.target.value);
+    };
 
     const archivoHandler = async (e) => {
         const archivo = e.target.files[0];
@@ -369,7 +374,7 @@ const ProductosInactivos = () => {
                                         <td>{productos.pro_nombre}</td>
                                         <td>{productos.pro_descripcion}</td>
                                         <td>{productos.cat_nombre}</td>
-                                        <td>${new Intl.NumberFormat('en-US').format(productos.pro_valor_iva)}</td>
+                                        <td>{productos.pro_valor_iva ? '12%' : '0%'}</td>
                                         <td>${new Intl.NumberFormat('en-US').format(productos.pro_costo)}</td>
                                         <td>${new Intl.NumberFormat('en-US').format(productos.pro_pvp)}</td>
                                         <td>
@@ -388,8 +393,7 @@ const ProductosInactivos = () => {
                                                 'Imagen no encontrada'
                                             )}
                                         </td>
-                                        <td>{productos.pro_estado ? 'Activo' : 'Inactivo'}</td>
-                                        <td>{productos.pro_stock}</td>
+                                        <td>{productos.pro_estado ? 'Inactivo' : 'Activo'}</td>
                                     </tr>
                                 );
                             })}
@@ -494,8 +498,8 @@ const ProductosInactivos = () => {
                                     <select
                                         id="cat_id"
                                         className="border border-gray-200 rounded px-3 py-2 w-full"
-                                        value={selectedCategory}
-                                        onChange={(e) => setSelectedCategory(e.target.value)}
+                                        value={selectedCategory || ''}
+                                        onChange={handleCategoryChange}
                                     >
                                         <option value="">Elige una categoría</option>
                                         {categoriaOptions.map((categoria, index) => (
@@ -507,17 +511,19 @@ const ProductosInactivos = () => {
                                 </div>
                                 <div className="grid grid-cols-2 gap-2 mb-3">
                                     <div className="flex items-center space-x-2">
-                                        <i className="fa-solid fa-dollar"></i>
+                                        <i className="fa-solid fa-edit"></i>
                                         <label className="text-sm">IVA</label>
                                     </div>
-                                    <input
-                                        type="text"
-                                        id="pro_valor_iva"
-                                        className="border border-gray-200 rounded px-3 py-2 w-full"
-                                        placeholder="Valor Iva"
-                                        value={pro_valor_iva}
-                                        onChange={(e) => setproValorIva(e.target.value)}
-                                    />
+                                    <div className="flex items-center space-x-2">
+                                        <input
+                                            type="checkbox"
+                                            id="pro_estado"
+                                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                            checked={pro_valor_iva}
+                                            onChange={(e) => setproValorIva(e.target.checked)}
+                                        />
+                                        <p>{pro_valor_iva ? "12%" : "0%"}</p>
+                                    </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-2 mb-3">
                                     <div className="flex items-center space-x-2">
@@ -535,16 +541,22 @@ const ProductosInactivos = () => {
                                 </div>
                                 <div className="grid grid-cols-2 gap-2 mb-3">
                                     <div className="flex items-center space-x-2">
-                                        <i className="fa-solid fa-dollar"></i>
+                                        <i className="fa-solid fa-edit"></i>
                                         <label className="text-sm">PVP</label>
                                     </div>
                                     <input
                                         type="text"
                                         id="pro_pvp"
                                         className="border border-gray-200 rounded px-3 py-2 w-full"
-                                        placeholder="PVP"
-                                        value={pro_pvp}
-                                        onChange={(e) => setproPvp(e.target.value)}
+                                        placeholder={
+                                            Number(pro_costo) * 0.20 +
+                                            Number(pro_costo) * (pro_valor_iva ? 0.12 : 0) +
+                                            Number(pro_costo)
+                                        }
+                                        value={Number(pro_costo) * 0.20 +
+                                            Number(pro_costo) * (pro_valor_iva ? 0.12 : 0) +
+                                            Number(pro_costo)}
+                                        disabled={true} // Agrega el atributo "disabled" con el valor true para inhabilitar el input
                                     />
                                 </div>
                                 <div className="grid grid-cols-2 gap-2 mb-3">
@@ -572,9 +584,6 @@ const ProductosInactivos = () => {
                                                 <img src={pro_imagen} alt="Imagen anterior" className="w-full" style={{ maxWidth: '80px' }} />
                                             </div>
                                         )}
-                                        <button className="cursor-pointer bg-dark-purple text-white rounded-md px-4 py-2 transition duration-500 ease select-none hover:bg-violet-600 focus:outline-none focus:shadow-outline mt-2 w-full">
-                                            Cargar Imagen
-                                        </button>
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-2 mb-3">

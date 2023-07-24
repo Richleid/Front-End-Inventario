@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import ImgProd from '../assets/img/Switch_productos_nuevo.webp';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -7,6 +7,9 @@ import AxiosProducto from '../components/AxiosProducto';
 import { app } from '../fb';
 import PDFButton from "./PDFButton";
 import PDFButtonProducts from "./PDFButtonProducts";
+import UserContext from '../UserContext';
+import Login from './Login';
+import App from '../App';
 
 const AdminProducts = () => {
     const [modalOpen, setModalOpen] = useState(false);
@@ -25,10 +28,10 @@ const AdminProducts = () => {
     const [title, setTittle] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
     const [categoriaOptions, setCategoriaOptions] = useState([]);
-
     const [imageModalOpen, setImageModalOpen] = useState(false);
     const [selectedImageUrl, setSelectedImageUrl] = useState("");
     const [docus, setDocus] = useState([]);
+    const { user } = useContext(UserContext);
 
     //PDFC/U
     const [selectedProductId, setSelectedProductId] = useState(null);
@@ -69,7 +72,7 @@ const AdminProducts = () => {
     });
     //Paginación
     const [currentPage, setCurrentPage] = useState(1);
-    const productsPerPage = 6;
+    const productsPerPage = 5;
 
     const indexOfLastProduct = currentPage * productsPerPage;
     const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
@@ -83,6 +86,7 @@ const AdminProducts = () => {
         getCategorias();
         getCategoryIdFromName();
         subida();
+        console.log('Usuario ingresado: ..' + App.UserContext);
     }, []);
 
     const getProductos = async () => {
@@ -141,7 +145,7 @@ const AdminProducts = () => {
         setproNombre('');
         setproDescripcion('');
         setcatId('');
-        setproValorIva('');
+        setproValorIva(true);
         setproCosto('');
         setproPvp('');
         setproImagen('');
@@ -188,8 +192,6 @@ const AdminProducts = () => {
             show_alerta('Escribe el valor de IVA', 'warning');
         } else if (pro_costo === '') {
             show_alerta('Escribe el costo del producto', 'warning');
-        } else if (pro_pvp === '') {
-            show_alerta('Escribe el pvp del producto', 'warning');
         } else if (pro_imagen.trim() === '') {
             show_alerta('Añade una imagen al producto', 'warning');
         } else {
@@ -197,12 +199,12 @@ const AdminProducts = () => {
             const categoryObject = await getCategoryIdFromName(selectedCategory);
             if (categoryObject !== null) {
                 parametros = {
+                    aud_usuario: user,
                     pro_nombre: pro_nombre,
                     pro_descripcion: pro_descripcion,
                     cat_id: categoryObject.cat_id,
                     pro_valor_iva: pro_valor_iva,
                     pro_costo: pro_costo,
-                    pro_pvp: pro_pvp,
                     pro_imagen: pro_imagen,
                     pro_estado: pro_estado
                 };
@@ -225,6 +227,9 @@ const AdminProducts = () => {
             if (respuesta != null) {
                 show_alerta('Guardado'); // Mostrar mensaje "Guardado"
                 closeModal(); // Cerrar modal y recargar productos
+                console.log('Esta la respuesta :' + respuesta.data)
+                console.log("valor iva actual" + pro_valor_iva);
+                console.log("valor pvp actual" + pro_pvp);
             } else {
                 show_alerta('Error en la respuesta del servidor', 'error');
             }
@@ -233,32 +238,17 @@ const AdminProducts = () => {
         }
     };
 
-    /*const eliminarProducto = async (pro_id) => {
-        try {
-            const parametros = { pro_id };
-            const respuesta = await AxiosProducto('/productos/delete', null, 'put', parametros);
-            if (respuesta != null) {
-                show_alerta('Eliminado'); // Mostrar mensaje "Eliminado"
-                getProductos(); // Recargar productos
-            } else {
-                show_alerta('Error en la respuesta del servidor', 'error');
-            }
-        } catch (error) {
-            show_alerta('Error en la solicitud: ' + error.message, 'error');
-            console.log(error);
-        }
-    };*/
-
     const actualizarProducto = async () => {
         try {
+            const categoryObject = await getCategoryIdFromName(selectedCategory);
             const parametros = {
+                aud_usuario: user,
                 pro_id: pro_id,
                 pro_nombre: pro_nombre,
                 pro_descripcion: pro_descripcion,
-                cat_id: cat_id,
+                cat_id: categoryObject.cat_id,
                 pro_valor_iva: pro_valor_iva,
                 pro_costo: pro_costo,
-                pro_pvp: pro_pvp,
                 pro_imagen: pro_imagen,
                 pro_estado: pro_estado
             };
@@ -323,7 +313,7 @@ const AdminProducts = () => {
                             <button onClick={() => openModal(1)} className="bg-dark-purple text-white p-3 rounded">
                                 <i className="fa-solid fa-circle-plus"></i>Añadir
                             </button>
-                            <div style={{ position: "absolute", top: "1.5%", right: "7.5%" }}>
+                            <div style={{ position: "fixed", top: "1.5%", right: "10%" }}>
                                 <PDFButton data={producto} />
                             </div>
                         </div>
@@ -359,11 +349,7 @@ const AdminProducts = () => {
                                         className={`bg-white ${index % 2 === 0 ? 'bg-gray-50' : ''} hover:bg-gray-100`}
                                     >
                                         <td style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                            <PDFButtonProducts
-                                                selectedProduct={productos}
-                                                setSelectedProductId={setSelectedProductId}
-                                                style={{ marginLeft: '10px' }}
-                                            />
+
                                             <button
                                                 onClick={() =>
                                                     openModal(
@@ -385,14 +371,18 @@ const AdminProducts = () => {
                                             >
                                                 <i className="fa-solid fa-edit text-white"></i>
                                             </button>
-
+                                            <div>
+                                                <PDFButtonProducts
+                                                    selectedProduct={productos}
+                                                    setSelectedProductId={setSelectedProductId}
+                                                />
+                                            </div>
                                         </td>
-
                                         <td>{productos.pro_id}</td>
                                         <td>{productos.pro_nombre}</td>
                                         <td>{productos.pro_descripcion}</td>
                                         <td>{productos.cat_nombre}</td>
-                                        <td>${new Intl.NumberFormat('en-US').format(productos.pro_valor_iva)}</td>
+                                        <td>{productos.pro_valor_iva ? '12%' : '0%'}</td>
                                         <td>${new Intl.NumberFormat('en-US').format(productos.pro_costo)}</td>
                                         <td>${new Intl.NumberFormat('en-US').format(productos.pro_pvp)}</td>
                                         <td>
@@ -527,20 +517,30 @@ const AdminProducts = () => {
                                             </option>
                                         ))}
                                     </select>
+                                    <input
+                                        type="text"
+                                        id="cat_id"
+                                        className="border border-gray-200 rounded px-3 py-2 w-full"
+                                        placeholder={cat_id}
+                                        value={cat_id}
+                                        onChange={(e) => setcatId(e.target.value)}
+                                    />
                                 </div>
                                 <div className="grid grid-cols-2 gap-2 mb-3">
                                     <div className="flex items-center space-x-2">
-                                        <i className="fa-solid fa-dollar"></i>
+                                        <i className="fa-solid fa-edit"></i>
                                         <label className="text-sm">IVA</label>
                                     </div>
-                                    <input
-                                        type="text"
-                                        id="pro_valor_iva"
-                                        className="border border-gray-200 rounded px-3 py-2 w-full"
-                                        placeholder="Valor Iva"
-                                        value={pro_valor_iva}
-                                        onChange={(e) => setproValorIva(e.target.value)}
-                                    />
+                                    <div className="flex items-center space-x-2">
+                                        <input
+                                            type="checkbox"
+                                            id="pro_estado"
+                                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                            checked={pro_valor_iva}
+                                            onChange={(e) => setproValorIva(e.target.checked)}
+                                        />
+                                        <p>{pro_valor_iva ? "12%" : "0%"}</p>
+                                    </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-2 mb-3">
                                     <div className="flex items-center space-x-2">
@@ -558,16 +558,22 @@ const AdminProducts = () => {
                                 </div>
                                 <div className="grid grid-cols-2 gap-2 mb-3">
                                     <div className="flex items-center space-x-2">
-                                        <i className="fa-solid fa-dollar"></i>
+                                        <i className="fa-solid fa-edit"></i>
                                         <label className="text-sm">PVP</label>
                                     </div>
                                     <input
                                         type="text"
                                         id="pro_pvp"
                                         className="border border-gray-200 rounded px-3 py-2 w-full"
-                                        placeholder="PVP"
-                                        value={pro_pvp}
-                                        onChange={(e) => setproPvp(e.target.value)}
+                                        placeholder={
+                                            Number(pro_costo) * 0.20 +
+                                            Number(pro_costo) * (pro_valor_iva ? 0.12 : 0) +
+                                            Number(pro_costo)
+                                        }
+                                        value={Number(pro_costo) * 0.20 +
+                                            Number(pro_costo) * (pro_valor_iva ? 0.12 : 0) +
+                                            Number(pro_costo)}
+                                        disabled={true} // Agrega el atributo "disabled" con el valor true para inhabilitar el input
                                     />
                                 </div>
                                 <div className="grid grid-cols-2 gap-2 mb-3">
@@ -595,9 +601,6 @@ const AdminProducts = () => {
                                                 <img src={pro_imagen} alt="Imagen anterior" className="w-full" style={{ maxWidth: '80px' }} />
                                             </div>
                                         )}
-                                        <button className="cursor-pointer bg-dark-purple text-white rounded-md px-4 py-2 transition duration-500 ease select-none hover:bg-violet-600 focus:outline-none focus:shadow-outline mt-2 w-full">
-                                            Cargar Imagen
-                                        </button>
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-2 mb-3">

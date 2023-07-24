@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import PaginationButtons from './PaginationButtons'
 import TableContent from './Table/TableContent'
 import AxiosKardex from '../helpers/AxiosKardex'
@@ -7,10 +7,12 @@ import TableHeader from './Table/TableHeader'
 import CircularWithValueLabel from '../helpers/CircularProgressWithLabel'
 import { useEffect, useRef } from 'react'
 import PDFButtonKardex from './PDFButtonKardex'
+import UserContext from '../UserContext';
 
 const KardexProductos = () => {
     const [respuestaDatos, setRespuestaDatos] = useState()
     const [respuestaDatosFiltrados, setRespuestaDatosFiltrados] = useState()
+    const { user } = useContext(UserContext);
     const [filtroProducto, setFiltroProducto] = useState('1')
     const [datosProductoBuscado, setDatosProductoBuscado] = useState({
         codProd: '',

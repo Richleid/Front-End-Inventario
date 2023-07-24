@@ -47,24 +47,6 @@ const styles = StyleSheet.create({
     width: 90,
     height: 100,
   },
-  /*tableHeader01: {
-    width: '5%',
-    borderRightWidth: 1,
-    borderRightColor: '#000000',
-    padding: 1,
-    fontSize: 13,
-    backgroundColor: '#f2f2f2',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  tableCell01: {
-    width: '5%',
-    borderRightWidth: 1,
-    fontSize: 12,
-    borderRightColor: '#000000',
-    padding: 1,
-    textAlign: 'center',
-  },*/
 });
 
 
@@ -130,7 +112,7 @@ const PDFButton = ({ data }) => {
                         <Text>{producto.cat_nombre}</Text>
                       </View>
                       <View style={styles.tableCell}>
-                        <Text>{producto.pro_valor_iva}</Text>
+                        <Text>{producto.pro_valor_iva? "12%" : "0%"}</Text>
                       </View>
                       <View style={styles.tableCell}>
                         <Text>{producto.pro_costo}</Text>

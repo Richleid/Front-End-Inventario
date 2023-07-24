@@ -1,19 +1,14 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Link } from 'react-router-dom';
+import UserContext from './UserContext';
 import RoutPages from './routes/Routes';
 import Login from './components/Login';
 import imgSrc from './assets/img/imgMenu';
 
 function App() {
+  const [user, setUser] = useState(null);
   const [open, setOpen] = useState(true);
   const [userRole, setUserRole] = useState(null);
-
-  // Definimos las rutas de redirección para cada rol
-  const defaultRoute = {
-    administrador: '/',
-    bodeguero: '/',
-    auditor: '/',
-  };
 
   // Definimos las opciones del menú para cada rol
   const OptionsNavBar = {
@@ -33,8 +28,9 @@ function App() {
     ],
   };
 
-  const handleLogin = (role) => {
-    console.log('Usuario autenticado. Rol:', role);
+  const handleLogin = (username, role) => {
+    console.log('Usuario autenticado. Nombre:', username, 'Rol:', role);
+    setUser(username);
     setUserRole(role);
   };
 
@@ -46,6 +42,7 @@ function App() {
   console.log('Estado actual de userRole:', userRole);
 
   return (
+    <UserContext.Provider value={{ user, setUser }}>
     <Router>
       <div className="flex">
         <div className={`${open ? "w-80" : "w-20"} duration-300 pl-2 h-screen gap-4 bg-dark-purple relative`}>
@@ -62,6 +59,11 @@ function App() {
               Inventario Productos
             </h1>
           </div>
+          <div className='flex gap-x-4 mt-4 items-center'>
+            <h3 className={`${!open && "hidden"}  text-white p-0 origin-left font-semibold duration-200 text-base`}>
+            {user}
+            </h3>
+          </div>
           <ul className={`${open ? "p-10 pt-5" : "p-0 pt-5"} duration-300`}>
             {userRole && OptionsNavBar[userRole].map((menu, index) => (
               <li key={index} className={`${menu.gap ? "mt-9" : "mt-2"} text-gray-300 text-sm flex items-center align-middle
@@ -73,15 +75,14 @@ function App() {
               </li>
             ))}
           </ul>
-          <div>
-            {userRole !== null && (
-              <div className='flex gap-x-4 items-center mt-10 cursor-pointer' onClick={handleLogout}>
-                {/* Agregamos el evento onClick para llamar a la función handleLogout */}
-                <img src={imgSrc['Setting']} className={`w-6 ml-2`} alt='img-setting' />
-                <h1 className={`${!open && "scale-0 m-14"} text-white font-semibold origin-left textx1 duration-300`}>Cerrar Sesion</h1>
-              </div>
-            )}
-          </div>
+          <div className="absolute bottom-0 w-full mb-10 ml-2">
+    {userRole !== null && (
+      <div className='flex gap-x-4 items-center mt-10 cursor-pointer' onClick={handleLogout}>
+        <img src={imgSrc['Setting']} className={`w-6 ml-2`} alt='img-setting' />
+        <h1 className={`${!open && "scale-0 m-2"} text-white font-semibold origin-left textx1 duration-300`}>Cerrar Sesion</h1>
+      </div>
+    )}
+  </div>
         </div>
         <div className={`font-semibold text-sm h-screen relative flex justify-center w-full`}>
           {userRole === null ? (
@@ -94,6 +95,7 @@ function App() {
         </div>
       </div>
     </Router>
+    </UserContext.Provider>
   );
 }
 

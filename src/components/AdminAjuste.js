@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useContext } from 'react';
 import Switch from '@mui/material/Switch'
 import AxiosAjustes from '../helpers/AxiosAjustes';
 import { useEffect } from 'react';
@@ -9,19 +9,23 @@ import ReactDatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.module.css'
 import moment from 'moment';
 import SelectDropDown from './Select/SelectDropDown';
+import UserContext from '../UserContext';
 
 const AdminAjuste = () => {
     const [probando, setProbando] = useState()
     const [idAjuste, setIdAjuste] = useState()
     const [idDetAjuste, setIdDetAjuste] = useState()
+    const { user } = useContext(UserContext);
     const [fecha, setFecha] = useState(new Date())
     const [ajuConsultado, setAjuConsultado] = useState({
+        aud_usuario:user,
         aju_numero: '',
         aju_fecha: '',
         aju_descripcion: '',
         aju_estado: ''
     })
     const [ajuDetConsultado, setAjuDetConsultado] = useState({
+        aud_usuario:user,
         aju_det_id: '',
         productoId: '',
         aju_det_cantidad: '',
@@ -34,7 +38,7 @@ const AdminAjuste = () => {
     const [estadoDetalleAjuste, setEstadoDetalleAjuste] = useState()
     const [modificableDetalleAjuste, setModificableDetalleAjuste] = useState()
     const label = { inputProps: { 'aria-label': 'Switch demo' } };
-    const jwToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2ODk3MDM1NjQsImV4cCI6MTY4OTc4OTk2NH0.KxY3bY6VQcZWQh3293LEQkNhGhTpAitDQcLN2xjtCc4'
+    const jwToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2OTAxNzI3NDcsImV4cCI6MTY5MDI1OTE0N30.LYt5cNwvhbfwh15Zt1WiL1pXQqCsYqCjuAQBSY5llGQ'
     let responseAjuste
     let responseDetAjuste
 
@@ -45,6 +49,7 @@ const AdminAjuste = () => {
         if (ajusBuscado.length > 0) {
             let fechaAjuste = FormateadorFecha(ajusBuscado[0].aju_fecha)
             setAjuConsultado({
+                aud_usuario:user,
                 aju_numero: `${ajusBuscado[0].aju_numero}`,
                 aju_fecha: `${fechaAjuste}`,
                 aju_descripcion: `${ajusBuscado[0].aju_descripcion}`,
@@ -71,12 +76,14 @@ const AdminAjuste = () => {
             }
         } else {
             setAjuConsultado({
+                aud_usuario:user,
                 aju_numero: ``,
                 aju_fecha: ``,
                 aju_descripcion: ``,
                 aju_estado: ``
             })
             setAjuDetConsultado({
+                aud_usuario:user,
                 aju_det_id: ``,
                 productoId: ``,
                 aju_det_cantidad: ``,
@@ -93,6 +100,7 @@ const AdminAjuste = () => {
             })
             if (ajuDetBuscado.length > 0) {
                 setAjuDetConsultado({
+                    aud_usuario:user,
                     aju_det_id: `${ajuDetBuscado[0].aju_det_id}`,
                     productoId: `${ajuDetBuscado[0].pro_id}`,
                     aju_det_cantidad: `${ajuDetBuscado[0].aju_det_cantidad}`,
@@ -103,6 +111,7 @@ const AdminAjuste = () => {
                 setModificableDetalleAjuste(ajuDetBuscado[0].aju_det_modificable)
             } else {
                 setAjuDetConsultado({
+                    aud_usuario:user,
                     aju_det_id: ``,
                     productoId: ``,
                     aju_det_cantidad: ``,
@@ -198,6 +207,7 @@ const AdminAjuste = () => {
     const onClickActualizarAjuste = async () => {
         responseAjuste = await Axios({ method: 'PUT', url: 'https://inventarioproductos.onrender.com/updateAjuste', data: ajuConsultado, headers: { 'Authorization': `${jwToken}` } }).catch(function (error) { console.log(error) })
         setAjuConsultado({
+            aud_usuario:user,
             aju_numero: ``,
             aju_fecha: ``,
             aju_descripcion: ``,
