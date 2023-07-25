@@ -8,6 +8,7 @@ import axios from "axios";
 import UserContext from '../UserContext';
 import { BrowserRouter as Router, Link, Routes, Route } from 'react-router-dom'
 import AdminAjuste from "./AdminAjuste";
+import PDFButtonAjuste from "./PDFButtonAjuste";
 
 
 const AdminAjustes = () => {
@@ -99,7 +100,7 @@ const AdminAjustes = () => {
     setDetalles((detalles) => [
       ...detalles,
       {
-        aud_usuario:user,
+        aud_usuario: user,
         pro_id: proId,
         aju_det_cantidad: cantidadFinal,
         aju_det_modificable: ajuDetModificable,
@@ -126,7 +127,7 @@ const AdminAjustes = () => {
       const responseAjuste = await axios.post(
         "https://inventarioproductos.onrender.com/ajustes/nuevo",
         {
-          aud_usuario:user,
+          aud_usuario: user,
           aju_fecha: aju_fecha,
           aju_descripcion: aju_descripcion,
           aju_estado: aju_estado,
@@ -284,7 +285,7 @@ const AdminAjustes = () => {
       show_alerta("Elige el estado del ajuste", "warning");
     } else {
       parametros = {
-        aud_usuario:user,
+        aud_usuario: user,
         aju_fecha: aju_fecha,
         aju_descripcion: aju_descripcion,
         aju_estado: aju_estado,
@@ -369,11 +370,15 @@ const AdminAjustes = () => {
                   className={`bg-white ${index % 2 === 0 ? "bg-gray-50" : ""
                     } hover:bg-gray-100`}
                 >
-                  <td style={{ verticalAlign: 'middle' }}>
-                  <Link to={`/AdminEditAjuste/${ajuste.aju_numero}`} className="bg-dark-purple p-2 rounded-full">
+                  <td style={{ display: 'grid', gridTemplateColumns: 'auto auto', alignItems: 'center',verticalAlign: 'middle' }}>
+                    <Link to={`/AdminEditAjuste/${ajuste.aju_numero}`} className="bg-dark-purple p-2 rounded-full">
                       <i className="fa-solid fa-edit text-white"></i>
                     </Link>
+                    <div style={{ marginRight: '30px' }}>
+                      {PDFButtonAjuste && <PDFButtonAjuste ajuste={ajuste} />}
+                    </div>
                   </td>
+
                   <td className="p-3">{ajuste.aju_numero}</td>
                   <td>{ajuste.aju_fecha}</td>
                   <td>{ajuste.aju_descripcion}</td>

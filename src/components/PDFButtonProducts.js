@@ -139,7 +139,7 @@ const PDFButtonProducts = ({ selectedProduct, setSelectedProductId }) => {
             {({ url }) => {
                 if (url) {
                     return (
-                        <a href={url} target="_blank" rel="noopener noreferrer" onClick={() => setSelectedProductId(null)}>
+                        <a href={url} download="producto.pdf" target="_blank" rel="noopener noreferrer" onClick={() => setSelectedProductId(null)}>
                             <img src={imagen} alt="Imagen" style={{ maxWidth: '35px', maxHeight: '35px' }} />
                         </a>
                     );
