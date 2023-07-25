@@ -1,4 +1,4 @@
-import React, { useState,useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import Switch from '@mui/material/Switch'
 import AxiosAjustes from '../helpers/AxiosAjustes';
 import { useEffect } from 'react';
@@ -9,23 +9,26 @@ import ReactDatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.module.css'
 import moment from 'moment';
 import SelectDropDown from './Select/SelectDropDown';
+import { useParams } from 'react-router';
 import UserContext from '../UserContext';
+import { Link } from 'react-router-dom';
 
 const AdminAjuste = () => {
+    const { iIdAjuste } = useParams()
     const [probando, setProbando] = useState()
     const [idAjuste, setIdAjuste] = useState()
     const [idDetAjuste, setIdDetAjuste] = useState()
     const { user } = useContext(UserContext);
     const [fecha, setFecha] = useState(new Date())
     const [ajuConsultado, setAjuConsultado] = useState({
-        aud_usuario:user,
+        aud_usuario: user,
         aju_numero: '',
         aju_fecha: '',
         aju_descripcion: '',
         aju_estado: ''
     })
     const [ajuDetConsultado, setAjuDetConsultado] = useState({
-        aud_usuario:user,
+        aud_usuario: user,
         aju_det_id: '',
         productoId: '',
         aju_det_cantidad: '',
@@ -38,7 +41,7 @@ const AdminAjuste = () => {
     const [estadoDetalleAjuste, setEstadoDetalleAjuste] = useState()
     const [modificableDetalleAjuste, setModificableDetalleAjuste] = useState()
     const label = { inputProps: { 'aria-label': 'Switch demo' } };
-    const jwToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2OTAxNzI3NDcsImV4cCI6MTY5MDI1OTE0N30.LYt5cNwvhbfwh15Zt1WiL1pXQqCsYqCjuAQBSY5llGQ'
+    const jwToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2OTAyNDM4ODksImV4cCI6MTY5MDUwMzA4OX0.QdMSJgSMt5YvcQG8cSjG74UnvHjHz_YOQINovEKtLAc'
     let responseAjuste
     let responseDetAjuste
 
@@ -49,7 +52,7 @@ const AdminAjuste = () => {
         if (ajusBuscado.length > 0) {
             let fechaAjuste = FormateadorFecha(ajusBuscado[0].aju_fecha)
             setAjuConsultado({
-                aud_usuario:user,
+                aud_usuario: user,
                 aju_numero: `${ajusBuscado[0].aju_numero}`,
                 aju_fecha: `${fechaAjuste}`,
                 aju_descripcion: `${ajusBuscado[0].aju_descripcion}`,
@@ -76,14 +79,14 @@ const AdminAjuste = () => {
             }
         } else {
             setAjuConsultado({
-                aud_usuario:user,
+                aud_usuario: user,
                 aju_numero: ``,
                 aju_fecha: ``,
                 aju_descripcion: ``,
                 aju_estado: ``
             })
             setAjuDetConsultado({
-                aud_usuario:user,
+                aud_usuario: user,
                 aju_det_id: ``,
                 productoId: ``,
                 aju_det_cantidad: ``,
@@ -100,7 +103,7 @@ const AdminAjuste = () => {
             })
             if (ajuDetBuscado.length > 0) {
                 setAjuDetConsultado({
-                    aud_usuario:user,
+                    aud_usuario: user,
                     aju_det_id: `${ajuDetBuscado[0].aju_det_id}`,
                     productoId: `${ajuDetBuscado[0].pro_id}`,
                     aju_det_cantidad: `${ajuDetBuscado[0].aju_det_cantidad}`,
@@ -111,7 +114,7 @@ const AdminAjuste = () => {
                 setModificableDetalleAjuste(ajuDetBuscado[0].aju_det_modificable)
             } else {
                 setAjuDetConsultado({
-                    aud_usuario:user,
+                    aud_usuario: user,
                     aju_det_id: ``,
                     productoId: ``,
                     aju_det_cantidad: ``,
@@ -207,19 +210,18 @@ const AdminAjuste = () => {
     const onClickActualizarAjuste = async () => {
         responseAjuste = await Axios({ method: 'PUT', url: 'https://inventarioproductos.onrender.com/updateAjuste', data: ajuConsultado, headers: { 'Authorization': `${jwToken}` } }).catch(function (error) { console.log(error) })
         setAjuConsultado({
-            aud_usuario:user,
+            aud_usuario: user,
             aju_numero: ``,
             aju_fecha: ``,
             aju_descripcion: ``,
             aju_estado: ``
         })
         setAjustes([])
-        if (await responseAjuste.statusText === 'OK') {
-            setTimeout(() => {
-                AxiosAjustes().then((resp) => { setAjustes(resp) })
-                alert('Actualizando ajuste...')
-            }, 1000);
-        }
+
+        setTimeout(() => {
+            AxiosAjustes().then((resp) => { setAjustes(resp) })
+        }, 1000);
+
     }
 
     const onClickActualizarDetalleAjuste = async () => {
@@ -254,8 +256,12 @@ const AdminAjuste = () => {
     useEffect(() => {
         console.log(ajuDetalles.length)
     }, [ajuDetalles])
+
     useEffect(() => {
-        console.log(ajustes)
+        if (ajustes.length > 0) {
+            console.log(iIdAjuste)
+            setIdAjuste(iIdAjuste)
+        }
     }, [ajustes])
 
     if (ajustes.length === 0) {
@@ -269,11 +275,12 @@ const AdminAjuste = () => {
             <div className='border-dark-purple md:mt-24 rounded-md'>
                 <div className='w-full sm:ml-3 bg-dark-purple grid grid-cols-1 md:grid-cols-2 gap-4 rounded-lg border-2 md:p-4'>
                     <div className='w-full'>
+                    <div className='bg-white rounded-md w-20 flex flex-row justify-center border-2 border-white hover:border-black'><Link to={'/AdminAjustes'}>Regresar</Link></div>
                         <div className='p-2'>
                             <h1 className='text-white text-lg'> Datos Ajuste: </h1>
                         </div>
                         <div className='p-5 w-full grid grid-cols-1 sm:grid-cols-2 gap-4'>
-                            <input type='text' name='pro_id' className='w-full cursor-pointer rounded-md border-2 hover:border-black duration-200' placeholder={`${ajuConsultado.aju_numero ? `${ajuConsultado.aju_numero}` : 'Ingrese el numero de ajuste'}`} onChange={handlerCambiarIdAjuste} />
+                            <input type='text' name='aju_numero' className='w-full cursor-pointer rounded-md border-2 hover:border-black duration-200' placeholder={`${ajuConsultado.aju_numero ? `${ajuConsultado.aju_numero}` : 'Ingrese el numero de ajuste'}`} onChange={handlerCambiarIdAjuste} />
                             <ReactDatePicker className='rounded-md' selected={fecha} onChange={onChangeFecha} dateFormat={'yyyy-MM-dd'} />
                             <input className='w-full h-6 cursor-pointer rounded-md border-2 hover:border-black duration-200' placeholder={`${ajuConsultado.aju_descripcion ? `${ajuConsultado.aju_descripcion}` : 'Descripción'}`} onChange={handlerCambiarDescripcionAjuste}></input>
                             <div className='rounded-md flex flex-row'>
@@ -287,7 +294,7 @@ const AdminAjuste = () => {
                                 <div className='text-white text-lg'>Ingrese el numero del detalle:</div>
                             </div>
                             <div className='mt-2'>
-                                {ajuDetalles.length > 0 ? <SelectDropDown detallesAjuste={ajuDetalles} onSelectIdDetAjuste={handlerSelectDropDown}/> : <SelectDropDown/> }
+                                {ajuDetalles.length > 0 ? <SelectDropDown detallesAjuste={ajuDetalles} onSelectIdDetAjuste={handlerSelectDropDown} /> : <SelectDropDown />}
                             </div>
                         </div>
                     </div>

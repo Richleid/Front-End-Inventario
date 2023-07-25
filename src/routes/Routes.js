@@ -16,7 +16,7 @@ const Rutas = () => {
             <Routes>
                 <Route path='/' element={<Home />}>
                 </Route>
-                <Route path='/AdminEditAjuste' element={<AdminAjuste />}>
+                <Route path='/AdminEditAjuste/:iIdAjuste' element={<AdminAjuste />}>
                 </Route>
                 <Route path='/AdminProduct' element={<AdminProducts />}>
                 </Route>

@@ -134,7 +134,7 @@ const AdminAjustes = () => {
         {
           headers: {
             Authorization:
-              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2OTAxNzI3NDcsImV4cCI6MTY5MDI1OTE0N30.LYt5cNwvhbfwh15Zt1WiL1pXQqCsYqCjuAQBSY5llGQ",
+              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2OTAyNDM4ODksImV4cCI6MTY5MDUwMzA4OX0.QdMSJgSMt5YvcQG8cSjG74UnvHjHz_YOQINovEKtLAc",
           },
         }
       );
@@ -164,7 +164,7 @@ const AdminAjustes = () => {
             {
               headers: {
                 Authorization:
-                  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2OTAxNzI3NDcsImV4cCI6MTY5MDI1OTE0N30.LYt5cNwvhbfwh15Zt1WiL1pXQqCsYqCjuAQBSY5llGQ",
+                  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2OTAyNDM4ODksImV4cCI6MTY5MDUwMzA4OX0.QdMSJgSMt5YvcQG8cSjG74UnvHjHz_YOQINovEKtLAc",
               },
             }
           );
@@ -198,7 +198,7 @@ const AdminAjustes = () => {
           {
             headers: {
               Authorization:
-                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2OTAxNzI3NDcsImV4cCI6MTY5MDI1OTE0N30.LYt5cNwvhbfwh15Zt1WiL1pXQqCsYqCjuAQBSY5llGQ",
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2OTAyNDM4ODksImV4cCI6MTY5MDUwMzA4OX0.QdMSJgSMt5YvcQG8cSjG74UnvHjHz_YOQINovEKtLAc",
             },
           }
         );
@@ -370,13 +370,9 @@ const AdminAjustes = () => {
                     } hover:bg-gray-100`}
                 >
                   <td style={{ verticalAlign: 'middle' }}>
-                  <Link to={'/AdminEditAjuste'} className="bg-dark-purple p-2 rounded-full">
+                  <Link to={`/AdminEditAjuste/${ajuste.aju_numero}`} className="bg-dark-purple p-2 rounded-full">
                       <i className="fa-solid fa-edit text-white"></i>
                     </Link>
-                    <Routes>
-                      <Route path="/AdminEditAjuste" element={<AdminAjuste />}>
-                      </Route>
-                    </Routes>
                   </td>
                   <td className="p-3">{ajuste.aju_numero}</td>
                   <td>{ajuste.aju_fecha}</td>

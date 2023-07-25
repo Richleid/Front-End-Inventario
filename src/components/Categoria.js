@@ -288,10 +288,13 @@ const Categoria = () => {
                         </div>
                         <div className="p-6">
                             <input type="hidden" id="id" />
-                            <div className="flex items-center space-x-2 mb-3">
-                                <span className="text-lg">
-                                    <i className="fa-solid fa-navicon"></i>
-                                </span>
+                            <div className="grid grid-cols-2 gap-2 mb-3">
+                                <div className="flex items-center space-x-2 mb-3">
+                                    <div className="flex items-center space-x-2">
+                                        <i className="fa-solid fa-navicon"></i>
+                                        <label className="text-sm">Nombre:</label>
+                                    </div>
+                                </div>
                                 <input
                                     type="text"
                                     id="cat_nombre"
@@ -300,21 +303,25 @@ const Categoria = () => {
                                     value={cat_nombre}
                                     onChange={(e) => setcatNombre(e.target.value)}
                                 ></input>
+
                             </div>
-                            <div className="flex items-center space-x-2 mb-3">
-                                <span className="text-lg">
+                            <div className="grid grid-cols-2 gap-2 mb-3">
+                                <div className="flex items-center space-x-2">
                                     <i className="fa-solid fa-edit"></i>
-                                </span>
-                                <input
-                                    type="text"
-                                    id="cat_estado"
-                                    className="border border-gray-200 rounded px-3 py-2 w-full"
-                                    placeholder="Estado"
-                                    value={cat_estado}
-                                    onChange={(e) => setcatEstado(e.target.value)}
-                                ></input>
+                                    <label className="text-sm">Estado: </label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <input
+                                        type="checkbox"
+                                        id="cat_estado"
+                                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                        checked={cat_estado}
+                                        onChange={(e) => setcatEstado(e.target.checked)}
+                                    />
+                                    <p>{cat_estado ? "Activo" : "Inactivo"}</p>
+                                </div>
                             </div>
-                            <div className="d-grid col-6 mx-auto flex justify-center">
+                            <div className="flex justify-center mt-8">
                                 <button onClick={() => validar()} className="bg-dark-purple text-white p-3 rounded">
                                     <i className="fa-solid fa-floppy-disk"></i> Guardar
                                 </button>

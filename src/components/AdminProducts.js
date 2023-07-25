@@ -517,14 +517,6 @@ const AdminProducts = () => {
                                             </option>
                                         ))}
                                     </select>
-                                    <input
-                                        type="text"
-                                        id="cat_id"
-                                        className="border border-gray-200 rounded px-3 py-2 w-full"
-                                        placeholder={cat_id}
-                                        value={cat_id}
-                                        onChange={(e) => setcatId(e.target.value)}
-                                    />
                                 </div>
                                 <div className="grid grid-cols-2 gap-2 mb-3">
                                     <div className="flex items-center space-x-2">
@@ -534,7 +526,7 @@ const AdminProducts = () => {
                                     <div className="flex items-center space-x-2">
                                         <input
                                             type="checkbox"
-                                            id="pro_estado"
+                                            id="pro_valor_iva"
                                             className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                                             checked={pro_valor_iva}
                                             onChange={(e) => setproValorIva(e.target.checked)}
