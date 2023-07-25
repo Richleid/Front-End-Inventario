@@ -87,6 +87,7 @@ const AdminProducts = () => {
         getCategoryIdFromName();
         subida();
         console.log('Usuario ingresado: ..' + App.UserContext);
+        console.log('Usuario productos: '+user);
     }, []);
 
     const getProductos = async () => {
@@ -214,6 +215,7 @@ const AdminProducts = () => {
                 } else {
                     actualizarProducto();
                 }
+                console.log('Usuario productos dentro: '+user);
                 enviarSolicitud(metodo, urlOperacion, parametros);
             } else {
                 show_alerta('No se pudo obtener el ID de la categoría seleccionada', 'error');

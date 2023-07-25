@@ -1,0 +1,28 @@
+CREATE OR REPLACE FUNCTION calcular_pro_pvp()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.pro_valor_iva THEN
+    DECLARE
+      ganancia NUMERIC;
+      iva NUMERIC;
+    BEGIN
+      ganancia := NEW.pro_costo * 0.20;
+      iva := NEW.pro_costo * 0.12;
+      NEW.pro_pvp := NEW.pro_costo + ganancia + iva;
+    END;
+  ELSE
+    DECLARE
+      ganancia NUMERIC;
+    BEGIN
+      ganancia := NEW.pro_costo * 0.20;
+      NEW.pro_pvp := NEW.pro_costo + ganancia;
+    END;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER actualiza_pro_pvp
+BEFORE INSERT OR UPDATE ON producto
+FOR EACH ROW
+EXECUTE FUNCTION calcular_pro_pvp();
