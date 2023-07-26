@@ -12,7 +12,7 @@ const AxiosKardex = async () => {
   let comprasAux = [], ventasAux = [], ventasCabAux = []
   let compras = [], ventas = [], detalles = []
   let productosAux = []
-  let jwToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2OTAyNDM4ODksImV4cCI6MTY5MDUwMzA4OX0.QdMSJgSMt5YvcQG8cSjG74UnvHjHz_YOQINovEKtLAc'
+  let jwToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2OTAyOTc0NDEsImV4cCI6MTY5MDU1NjY0MX0.2NcAwMJ1Kp8zc56WsCFR3bYvS0oWUjpyt-BWkmKelaQ'
   try {
     responseDetalles = Axios({ url: 'https://inventarioproductos.onrender.com/ajustes', headers: { 'Authorization': `${jwToken}` } })
   } catch (error) {
@@ -144,6 +144,7 @@ const AxiosKardex = async () => {
   } catch (error) {
     console.log('Error en responseCompras')
   }
+  console.log(compras)
   const response = ArrayKardexOrdenado(compras, ventas, detalles)
   return response
 }

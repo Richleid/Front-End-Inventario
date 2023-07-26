@@ -1,11 +1,11 @@
 import Axios from 'axios';
 
 const AxiosProducto = async (url, condiciones = null, tipoPeticion, parametros = null) => {
-  const jwToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2OTAyNDM4ODksImV4cCI6MTY5MDUwMzA4OX0.QdMSJgSMt5YvcQG8cSjG74UnvHjHz_YOQINovEKtLAc';
-  const baseUrl = 'https://inventarioproductos.onrender.com';
+  //const jwToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2OTAyOTc0NDEsImV4cCI6MTY5MDU1NjY0MX0.2NcAwMJ1Kp8zc56WsCFR3bYvS0oWUjpyt-BWkmKelaQ';
+  const baseUrl = 'http://localhost:3000';
   let peticion;
 
-  Axios.defaults.headers.common['Authorization'] = `${jwToken}`;
+  //Axios.defaults.headers.common['Authorization'] = `${jwToken}`;
   Axios.defaults.headers.common['Content-Type'] = 'application/json';
 
   try {

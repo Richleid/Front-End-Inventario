@@ -41,7 +41,7 @@ const AdminAjuste = () => {
     const [estadoDetalleAjuste, setEstadoDetalleAjuste] = useState()
     const [modificableDetalleAjuste, setModificableDetalleAjuste] = useState()
     const label = { inputProps: { 'aria-label': 'Switch demo' } };
-    const jwToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2OTAyNDM4ODksImV4cCI6MTY5MDUwMzA4OX0.QdMSJgSMt5YvcQG8cSjG74UnvHjHz_YOQINovEKtLAc'
+    const jwToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2OTAyOTc0NDEsImV4cCI6MTY5MDU1NjY0MX0.2NcAwMJ1Kp8zc56WsCFR3bYvS0oWUjpyt-BWkmKelaQ'
     let responseAjuste
     let responseDetAjuste
 
@@ -237,12 +237,10 @@ const AdminAjuste = () => {
             aju_det_estado: ``
         })
         setAjustes([])
-        if (await responseDetAjuste.statusText === 'OK') {
             setTimeout(() => {
                 AxiosAjustes().then((resp) => { setAjustes(resp) })
-                alert('Actualizando ajuste detalle...')
             }, 1000);
-        }
+
     }
 
     useEffect(() => {
@@ -291,7 +289,7 @@ const AdminAjuste = () => {
                         </div>
                         <div className=''>
                             <div className='p-2'>
-                                <div className='text-white text-lg'>Ingrese el numero del detalle:</div>
+                                <div className='text-white text-lg'>Ingrese el número del detalle:</div>
                             </div>
                             <div className='mt-2'>
                                 {ajuDetalles.length > 0 ? <SelectDropDown detallesAjuste={ajuDetalles} onSelectIdDetAjuste={handlerSelectDropDown} /> : <SelectDropDown />}

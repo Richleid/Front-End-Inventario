@@ -14,11 +14,11 @@ function App() {
   // Definimos las opciones del menú para cada rol
   const OptionsNavBar = {
     administrador: [
-      { title: "Administracion de Ajustes", src: "Folder", href: "/AdminAjustes" },
-      { title: "Administracion de Productos", src: "Chart_fill", href: "/AdminProduct" },
+      { title: "Administración de Ajustes", src: "Folder", href: "/AdminAjustes" },
+      { title: "Administración de Productos", src: "Chart_fill", href: "/AdminProduct" },
       { title: "Admnistración Categoria", src: "User", href: "/Categoria" },
       { title: "Kardex", src: "Folder", href: "/KardexProductos" },
-      { title: "Productos Inactivos", src: "Chat", href: "/ProductosInactivos" },
+      { title: "Productos Ináctivos", src: "Chat", href: "/ProductosInactivos" },
     ],
     bodeguero: [
       { title: "Administracion de Ajustes", src: "Folder", href: "/AdminAjustes" },
@@ -120,7 +120,7 @@ function App() {
               {userRole !== null && (
                 <div className='flex gap-x-4 items-center mt-10 cursor-pointer' onClick={handleLogout}>
                   <img src={imgSrc['Setting']} className={`w-6 ml-2`} alt='img-setting' />
-                  <h1 className={`${!open && "scale-0 m-2"} text-white font-semibold origin-left textx1 duration-300`}>Cerrar Sesion</h1>
+                  <h1 className={`${!open && "scale-0 m-2"} text-white font-semibold origin-left textx1 duration-300`}>Cerrar sesión</h1>
                 </div>
               )}
             </div>

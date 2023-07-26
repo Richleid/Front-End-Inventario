@@ -89,6 +89,9 @@ const AdminProducts = () => {
         console.log('Usuario ingresado: ..' + App.UserContext);
         console.log('Usuario productos: '+user);
     }, []);
+    useEffect(() =>{
+        console.log(producto)
+    },[producto])
 
     const getProductos = async () => {
         try {
@@ -561,11 +564,9 @@ const AdminProducts = () => {
                                         className="border border-gray-200 rounded px-3 py-2 w-full"
                                         placeholder={
                                             Number(pro_costo) * 0.20 +
-                                            Number(pro_costo) * (pro_valor_iva ? 0.12 : 0) +
                                             Number(pro_costo)
                                         }
                                         value={Number(pro_costo) * 0.20 +
-                                            Number(pro_costo) * (pro_valor_iva ? 0.12 : 0) +
                                             Number(pro_costo)}
                                         disabled={true} // Agrega el atributo "disabled" con el valor true para inhabilitar el input
                                     />
