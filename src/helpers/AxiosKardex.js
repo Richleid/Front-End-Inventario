@@ -1,6 +1,7 @@
 import { ArrayKardexOrdenado } from './ArrayKardexOrdenado'
 import Axios from 'axios'
 import { FormateadorFecha } from './FormateadorFecha'
+import axios from 'axios'
 
 const AxiosKardex = async () => {
   let responseCompras
@@ -12,34 +13,39 @@ const AxiosKardex = async () => {
   let comprasAux = [], ventasAux = [], ventasCabAux = []
   let compras = [], ventas = [], detalles = []
   let productosAux = []
-  let jwToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2OTAyNDcxMDAsImV4cCI6MTY5MDUwNjMwMH0.aHXQ5d52fi3wcoiuEuJn6QWldSWBFspLs7GJFI_z6mk'
+  let jwToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2OTAzODQyOTcsImV4cCI6MTY5MDY0MzQ5N30.kHVUX8F2i7WCqWTqqJ-8GFF3C5Nv-tRsgAekJOGGKs4'
+
+  const axiosInventario = axios.create()
+  const axiosApis = axios.create()
+  axiosApis.defaults.headers.common['Authorization'] = undefined;
+
   try {
-    responseDetalles = Axios({ url: 'https://inventarioproductos.onrender.com/ajustes', headers: { 'Authorization': `${jwToken}` } })
+    responseVentas = axiosApis.get('https://facturasapi202307161115.azurewebsites.net/api/FactDetalleFactura')
+  } catch (error) {
+    console.log('Error en peticion Axios Kardex ventas: ' + error)
+  }
+  try {
+    responseVentasCabecera = axiosApis.get('https://facturasapi202307161115.azurewebsites.net/api/FactFacturaCabecera')
+  } catch (error) {
+    console.log('Error en peticion Axios Kardex ventasCabecera: ' + error)
+  }
+  try {
+    responseCompras = axiosApis.get('https://gr2compras.000webhostapp.com/facturas')
+  } catch (error) {
+    console.log('Error en peticion Axios Kardex compras: ' + error)
+  }
+
+  try {
+    responseDetalles = axiosInventario({ url: 'https://inventarioproductos.onrender.com/ajustes', headers: { 'Authorization': `${jwToken}` } })
   } catch (error) {
     console.log('Error en peticion de Axios Kardex detalles: ' + error)
   }
 
   try {
-    responseVentas = Axios('https://facturasapi202307161115.azurewebsites.net/api/FactDetalleFactura')
-  } catch (error) {
-    console.log('Error en peticion Axios Kardex ventas: ' + error)
-  }
-  try {
-    responseVentasCabecera = Axios('https://facturasapi202307161115.azurewebsites.net/api/FactFacturaCabecera')
-  } catch (error) {
-    console.log('Error en peticion Axios Kardex ventasCabecera: ' + error)
-  }
-
-  try {
-    responseProductos = Axios({ url: 'https://inventarioproductos.onrender.com/productos', headers: { 'Authorization': `${jwToken}` } })
+    responseProductos = axiosInventario({ url: 'https://inventarioproductos.onrender.com/productos', headers: { 'Authorization': `${jwToken}` } })
     productosAux = (await responseProductos).data
   } catch (error) {
     console.log('Error en la peticion Axios de productos ' + error)
-  }
-  try {
-    responseCompras = Axios('https://gr2compras.000webhostapp.com/facturas')
-  } catch (error) {
-    console.log('Error en peticion Axios Kardex compras: ' + error)
   }
   try {
     detallesFiltrados = (await responseDetalles).data.filter(function (detallesFiltrados) {
@@ -76,7 +82,7 @@ const AxiosKardex = async () => {
           ventasAux.push(venta)
         })
       }
-      if(responseVentasCabecera){
+      if (responseVentasCabecera) {
         (await responseVentasCabecera).data.forEach(ventaCab => {
           ventasCabAux.push(ventaCab)
         })
@@ -94,17 +100,17 @@ const AxiosKardex = async () => {
         return nombreProducto.pro_id === idProductoAux
       })
       if (nombreProducto.length > 0) {
-        let cabeceraFacVenta = ventasCabAux.filter(function(cabeceraFacVenta){
+        let cabeceraFacVenta = ventasCabAux.filter(function (cabeceraFacVenta) {
           return cabeceraFacVenta.IdFacturaCabecera === idFacturaCabecera
         })
-        if(cabeceraFacVenta.length > 0){
+        if (cabeceraFacVenta.length > 0) {
           let fecha = FormateadorFecha(cabeceraFacVenta[0].FechaFactura)
           datos.fecha = fecha
           datos.idProducto = idProductoAux.toString()
           datos.nombreProducto = nombreProducto[0].pro_nombre
           datos.numeroDocumento = cabeceraFacVenta[0].IdFacturaCabecera
           datos.descripcion = 'Venta'
-          datos.cantidad = ventasAux[index].Cantidad*-1
+          datos.cantidad = ventasAux[index].Cantidad * -1
           datos.stock = 0
           ventas.push(datos)
         }
@@ -144,7 +150,6 @@ const AxiosKardex = async () => {
   } catch (error) {
     console.log('Error en responseCompras')
   }
-  console.log(compras)
   const response = ArrayKardexOrdenado(compras, ventas, detalles)
   return response
 }

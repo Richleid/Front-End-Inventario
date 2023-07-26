@@ -41,7 +41,7 @@ const AdminAjuste = () => {
     const [estadoDetalleAjuste, setEstadoDetalleAjuste] = useState()
     const [modificableDetalleAjuste, setModificableDetalleAjuste] = useState()
     const label = { inputProps: { 'aria-label': 'Switch demo' } };
-    const jwToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2OTAyOTc0NDEsImV4cCI6MTY5MDU1NjY0MX0.2NcAwMJ1Kp8zc56WsCFR3bYvS0oWUjpyt-BWkmKelaQ'
+    const jwToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2OTAzODQyOTcsImV4cCI6MTY5MDY0MzQ5N30.kHVUX8F2i7WCqWTqqJ-8GFF3C5Nv-tRsgAekJOGGKs4'
     let responseAjuste
     let responseDetAjuste
 
