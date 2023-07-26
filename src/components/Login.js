@@ -1,6 +1,7 @@
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import qs from 'qs'
 
 
 function Login({ setUserRole }) {
@@ -31,22 +32,27 @@ function Login({ setUserRole }) {
     }
 
     try {
-      const response = await axios.get(
-        `http://20.163.192.189:8080/api/login?user_username=${username}&user_password=${password}&mod_name=Inventario`,
+      const response = await axios.post(
+        `https://inventarioproductos.onrender.com/inicioSesion`,
+        {
+          username: username,
+          password: password
+        }
+        ,
         {
           headers: {
             Authorization:
-              'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwODA0MzIxMzcwIiwiZXhwIjoxNjk0OTg1NDgyfQ.GljEqO4wDKT_x94OIQ76k2AraJUY4YKAwBFrfs-ZsMQ',
-          },
+              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGVpdG8iLCJpYXQiOjE2OTAzNDY2MDIsImV4cCI6MTY5MDYwNTgwMn0.1d6GeMZepxOVJKALQUhiR67sYA-bcEG5gVaeNyuCcwA',
+          }
         }
       );
-
+      console.log(response.data)
       const data = response.data;
 
       // Si el usuario es válido y las credenciales son correctas
       if (data && data.user && data.user.usr_user === username) {
         setError('');
-        setUserRole("Usuario: "+data.user.usr_first_name +" "+ data.user.usr_first_lastname, data.user.usr_user); // Establecemos el rol del usuario basado en su nombre de usuario
+        setUserRole("Usuario: " + data.user.usr_first_name + " " + data.user.usr_first_lastname, data.functions); // Establecemos el rol del usuario basado en su nombre de usuario
         navigate("/");
       } else {
         setError('Credenciales incorrectas');
@@ -119,14 +125,14 @@ function Login({ setUserRole }) {
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: '1rem' }}>
             <label htmlFor="username" style={labelStyles}>
-              Usuario: 
+              Usuario:
             </label>
             <input
-              type="text" 
-              id="username" 
+              type="text"
+              id="username"
               value={username}
-              onChange={handleUsernameChange} 
-              placeholder="Enter your username" 
+              onChange={handleUsernameChange}
+              placeholder="Enter your username"
               style={inputStyles}
             />
           </div>

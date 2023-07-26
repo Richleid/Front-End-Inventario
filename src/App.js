@@ -5,28 +5,24 @@ import RoutPages from './routes/Routes';
 import Login from './components/Login';
 import imgSrc from './assets/img/imgMenu';
 import AxiosProducto from './components/AxiosProducto';
+import { object } from 'prop-types';
 
 function App() {
   const [user, setUser] = useState(null);
   const [open, setOpen] = useState(true);
   const [userRole, setUserRole] = useState(null);
+  const [optionsNavBarFilter, setOptionsNavBarFilter] = useState()
 
   // Definimos las opciones del menú para cada rol
-  const OptionsNavBar = {
-    administrador: [
-      { title: "Administración de Ajustes", src: "Folder", href: "/AdminAjustes" },
-      { title: "Administración de Productos", src: "Chart_fill", href: "/AdminProduct" },
-      { title: "Admnistración Categoria", src: "User", href: "/Categoria" },
-      { title: "Kardex", src: "Folder", href: "/KardexProductos" },
-      { title: "Productos Ináctivos", src: "Chat", href: "/ProductosInactivos" },
-    ],
-    bodeguero: [
-      { title: "Administracion de Ajustes", src: "Folder", href: "/AdminAjustes" },
-    ],
-    auditor: [
-      { title: "Auditoria", src: "Folder", href: "/Auditoria" },
-    ],
-  };
+  const OptionsNavBar = [
+    { title: "Administracion de Ajustes", funct: "AdminAjustes", src: "Folder", href: "/AdminAjustes" },
+    { title: "Administracion de Productos", funct: "AdminProducts", src: "Chart_fill", href: "/AdminProduct" },
+    { title: "Admnistración Categoria", funct: "Categoria", src: "User", href: "/Categoria" },
+    { title: "Kardex", funct: "KardexProductos", src: "Folder", href: "/KardexProductos" },
+    { title: "Productos Inactivos", funct: "ProductosInactivos", src: "Chat", href: "/ProductosInactivos" },
+    { title: "Actualizar ajuste", funct: "ActualizarAjuste", src: "Chat", href: "/AdminEditAjuste" },
+    { title: "Auditoria", funct: "Auditoria", src: "Folder", href: "/Auditoria" }
+  ];
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -49,20 +45,31 @@ function App() {
   const handleLogin = (username, role) => {
     console.log('Usuario autenticado. Nombre:', username, 'Rol:', role);
     setUser(username);
-    setUserRole(role);
+    setUserRole(Object.values(role));
     localStorage.setItem('user', username);
     localStorage.setItem('role', role);
-    
     // Corregir la propiedad "aud_accion" y "aud_observacion"
     var parametros = {
       aud_usuario: username,
     };
-    
+
     var metodo = 'post';
     var urlOperacion = '/Isesion';
     enviarSolicitud(metodo, urlOperacion, parametros);
   };
-  
+
+  useEffect(() => {
+    if (userRole) {
+      const options = []
+      userRole.forEach(element => {
+        const filtrado = OptionsNavBar.filter(function (filtrado) {
+          return filtrado.funct === element
+        })
+        options.push(filtrado[0])
+      });
+      setOptionsNavBarFilter(options)
+    }
+  }, [userRole])
 
 
   const handleLogout = () => {
@@ -70,8 +77,8 @@ function App() {
     localStorage.removeItem('role');
     window.location.href = '/Login'; // Redirigimos al usuario a la página de inicio de sesión
 
-     // Corregir la propiedad "aud_accion" y "aud_observacion"
-     var parametros = {
+    // Corregir la propiedad "aud_accion" y "aud_observacion"
+    var parametros = {
       aud_usuario: user,
     };
     setUserRole(null); // Borramos la información del usuario
@@ -106,7 +113,7 @@ function App() {
               </h3>
             </div>
             <ul className={`${open ? "p-10 pt-5" : "p-0 pt-5"} duration-300`}>
-              {userRole && OptionsNavBar[userRole].map((menu, index) => (
+              {(userRole && optionsNavBarFilter) && optionsNavBarFilter.map((menu, index) => (
                 <li key={index} className={`${menu.gap ? "mt-9" : "mt-2"} text-gray-300 text-sm flex items-center align-middle
         gap-x-4 cursor-pointer p-2 rounded-md mr-0 hover:bg-blue-500 duration-300`}>
                   <Link to={menu.href} className={`origin-left duration-300 flex items-center align-middle gap-x-4`}>
@@ -120,7 +127,7 @@ function App() {
               {userRole !== null && (
                 <div className='flex gap-x-4 items-center mt-10 cursor-pointer' onClick={handleLogout}>
                   <img src={imgSrc['Setting']} className={`w-6 ml-2`} alt='img-setting' />
-                  <h1 className={`${!open && "scale-0 m-2"} text-white font-semibold origin-left textx1 duration-300`}>Cerrar sesión</h1>
+                  <h1 className={`${!open && "scale-0 m-2"} text-white font-semibold origin-left textx1 duration-300`}>Cerrar Sesion</h1>
                 </div>
               )}
             </div>
