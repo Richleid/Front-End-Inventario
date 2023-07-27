@@ -313,10 +313,6 @@ const AdminAjuste = () => {
                                     <input className='w-full rounded-md border-2 hover:border-black duration-200' placeholder={`${ajuDetConsultado ? `${ajuDetConsultado.aju_det_cantidad}` : 'aju_det_cantidad'}`} onChange={handlerCambiarCantidadAjusteDetalle}></input>
                                 </div>
                                 <div className='m-2'>
-                                    <h1 >Modificable: </h1>
-                                    <Switch {...label} checked={modificableDetalleAjuste} onClick={handlerModificableDetalle}></Switch>
-                                </div>
-                                <div className='m-2'>
                                     <h1 >Estado: </h1>
                                     <Switch {...label} checked={estadoDetalleAjuste} onClick={handlerEstadoDetalle}></Switch>
                                 </div>
